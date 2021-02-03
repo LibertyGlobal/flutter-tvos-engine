@@ -36,6 +36,7 @@ flutter::SemanticsAction GetSemanticsActionForScrollDirection(
 
 }  // namespace
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 @implementation FlutterSwitchSemanticsObject {
   SemanticsObject* _semanticsObject;
 }
@@ -98,6 +99,7 @@ flutter::SemanticsAction GetSemanticsActionForScrollDirection(
 }
 
 @end  // FlutterSwitchSemanticsObject
+#endif
 
 @implementation FlutterCustomAccessibilityAction {
 }

@@ -80,6 +80,7 @@ static NSString* const kRestorationStateAppModificationKey = @"mod-date";
 - (void)applicationWillTerminate:(UIApplication*)application {
 }
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 - (void)application:(UIApplication*)application
@@ -88,6 +89,7 @@ static NSString* const kRestorationStateAppModificationKey = @"mod-date";
       didRegisterUserNotificationSettings:notificationSettings];
 }
 #pragma GCC diagnostic pop
+#endif
 
 - (void)application:(UIApplication*)application
     didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken {
@@ -95,6 +97,7 @@ static NSString* const kRestorationStateAppModificationKey = @"mod-date";
       didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
 }
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 - (void)application:(UIApplication*)application
@@ -102,6 +105,7 @@ static NSString* const kRestorationStateAppModificationKey = @"mod-date";
   [_lifeCycleDelegate application:application didReceiveLocalNotification:notification];
 }
 #pragma GCC diagnostic pop
+#endif
 
 - (void)userNotificationCenter:(UNUserNotificationCenter*)center
        willPresentNotification:(UNNotification*)notification
@@ -120,6 +124,7 @@ static NSString* const kRestorationStateAppModificationKey = @"mod-date";
 /**
  * Calls all plugins registered for `UNUserNotificationCenterDelegate` callbacks.
  */
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 - (void)userNotificationCenter:(UNUserNotificationCenter*)center
     didReceiveNotificationResponse:(UNNotificationResponse*)response
              withCompletionHandler:(void (^)(void))completionHandler NS_AVAILABLE_IOS(10_0) {
@@ -131,6 +136,7 @@ static NSString* const kRestorationStateAppModificationKey = @"mod-date";
     }
   }
 }
+#endif
 
 static BOOL IsDeepLinkingEnabled(NSDictionary* infoDictionary) {
   NSNumber* isEnabled = [infoDictionary objectForKey:@"FlutterDeepLinkingEnabled"];
@@ -201,6 +207,7 @@ static BOOL IsDeepLinkingEnabled(NSDictionary* infoDictionary) {
                               annotation:annotation];
 }
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 - (void)application:(UIApplication*)application
     performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
                completionHandler:(void (^)(BOOL succeeded))completionHandler NS_AVAILABLE_IOS(9_0) {
@@ -208,6 +215,7 @@ static BOOL IsDeepLinkingEnabled(NSDictionary* infoDictionary) {
       performActionForShortcutItem:shortcutItem
                  completionHandler:completionHandler];
 }
+#endif
 
 - (void)application:(UIApplication*)application
     handleEventsForBackgroundURLSession:(nonnull NSString*)identifier
