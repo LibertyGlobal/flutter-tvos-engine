@@ -48,7 +48,7 @@ extern NSNotificationName const FlutterSemanticsUpdateNotification;
  * FlutterViewController and other `UIViewController`s.
  */
 FLUTTER_DARWIN_EXPORT
-#ifdef __IPHONE_13_4 && !(defined(TARGET_OS_TV) && TARGET_OS_TV)
+#if defined(__IPHONE_13_4) && __IPHONE_13_4  && !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 @interface FlutterViewController
     : UIViewController <FlutterTextureRegistry, FlutterPluginRegistry, UIGestureRecognizerDelegate>
 #else
