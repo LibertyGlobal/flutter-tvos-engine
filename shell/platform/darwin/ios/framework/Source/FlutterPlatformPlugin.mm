@@ -14,7 +14,9 @@
 
 namespace {
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 constexpr char kTextPlainFormat[] = "text/plain";
+#endif
 const UInt32 kKeyPressClickSoundId = 1306;
 
 }  // namespace
@@ -111,23 +113,28 @@ using namespace flutter;
     return;
   }
 
-  if ([@"HapticFeedbackType.lightImpact" isEqualToString:feedbackType]) {
-    [[[[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleLight] autorelease]
-        impactOccurred];
-  } else if ([@"HapticFeedbackType.mediumImpact" isEqualToString:feedbackType]) {
-    [[[[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleMedium] autorelease]
-        impactOccurred];
-  } else if ([@"HapticFeedbackType.heavyImpact" isEqualToString:feedbackType]) {
-    [[[[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleHeavy] autorelease]
-        impactOccurred];
-  } else if ([@"HapticFeedbackType.selectionClick" isEqualToString:feedbackType]) {
-    [[[[UISelectionFeedbackGenerator alloc] init] autorelease] selectionChanged];
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
+  if (@available(iOS 10, *)) {
+    if ([@"HapticFeedbackType.lightImpact" isEqualToString:feedbackType]) {
+      [[[[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleLight] autorelease]
+          impactOccurred];
+    } else if ([@"HapticFeedbackType.mediumImpact" isEqualToString:feedbackType]) {
+      [[[[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleMedium] autorelease]
+          impactOccurred];
+    } else if ([@"HapticFeedbackType.heavyImpact" isEqualToString:feedbackType]) {
+      [[[[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleHeavy] autorelease]
+          impactOccurred];
+    } else if ([@"HapticFeedbackType.selectionClick" isEqualToString:feedbackType]) {
+      [[[[UISelectionFeedbackGenerator alloc] init] autorelease] selectionChanged];
+    }
   }
+#endif
 }
 
 - (void)setSystemChromePreferredOrientations:(NSArray*)orientations {
   UIInterfaceOrientationMask mask = 0;
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   if (orientations.count == 0) {
     mask |= UIInterfaceOrientationMaskAll;
   } else {
@@ -143,6 +150,7 @@ using namespace flutter;
       }
     }
   }
+#endif
 
   if (!mask) {
     return;
@@ -164,6 +172,7 @@ using namespace flutter;
   // We opt out of view controller based status bar visibility since we want
   // to be able to modify this on the fly. The key used is
   // UIViewControllerBasedStatusBarAppearance
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   [UIApplication sharedApplication].statusBarHidden =
       ![overlays containsObject:@"SystemUiOverlay.top"];
   if ([overlays containsObject:@"SystemUiOverlay.bottom"]) {
@@ -175,6 +184,7 @@ using namespace flutter;
         postNotificationName:FlutterViewControllerHideHomeIndicator
                       object:nil];
   }
+#endif
 }
 
 - (void)setSystemChromeEnabledSystemUIMode:(NSString*)mode {
@@ -207,6 +217,7 @@ using namespace flutter;
     return;
   }
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   UIStatusBarStyle statusBarStyle;
   if ([brightness isEqualToString:@"Brightness.dark"]) {
     statusBarStyle = UIStatusBarStyleLightContent;
@@ -235,6 +246,7 @@ using namespace flutter;
     // in favor of delegating to the view controller
     [[UIApplication sharedApplication] setStatusBarStyle:statusBarStyle];
   }
+#endif  
 }
 
 - (void)popSystemNavigator:(BOOL)isAnimated {
@@ -258,16 +270,19 @@ using namespace flutter;
 }
 
 - (NSDictionary*)getClipboardData:(NSString*)format {
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   UIPasteboard* pasteboard = [UIPasteboard generalPasteboard];
   if (!format || [format isEqualToString:@(kTextPlainFormat)]) {
     NSString* stringInPasteboard = pasteboard.string;
     // The pasteboard may contain an item but it may not be a string (an image for instance).
     return stringInPasteboard == nil ? nil : @{@"text" : stringInPasteboard};
   }
+#endif
   return nil;
 }
 
 - (void)setClipboardData:(NSDictionary*)data {
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   UIPasteboard* pasteboard = [UIPasteboard generalPasteboard];
   id copyText = data[@"text"];
   if ([copyText isKindOfClass:[NSString class]]) {
@@ -275,6 +290,7 @@ using namespace flutter;
   } else {
     pasteboard.string = @"null";
   }
+#endif
 }
 
 - (NSDictionary*)clipboardHasStrings {
