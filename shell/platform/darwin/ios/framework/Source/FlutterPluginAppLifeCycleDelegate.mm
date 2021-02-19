@@ -220,6 +220,7 @@ static BOOL IsPowerOfTwo(NSUInteger x) {
   }
 }
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 - (void)application:(UIApplication*)application
@@ -234,6 +235,7 @@ static BOOL IsPowerOfTwo(NSUInteger x) {
   }
 }
 #pragma GCC diagnostic pop
+#endif
 
 - (void)application:(UIApplication*)application
     didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken {
@@ -277,6 +279,7 @@ static BOOL IsPowerOfTwo(NSUInteger x) {
   }
 }
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 - (void)application:(UIApplication*)application
@@ -291,6 +294,7 @@ static BOOL IsPowerOfTwo(NSUInteger x) {
   }
 }
 #pragma GCC diagnostic pop
+#endif
 
 - (void)userNotificationCenter:(UNUserNotificationCenter*)center
        willPresentNotification:(UNNotification*)notification
@@ -308,6 +312,7 @@ static BOOL IsPowerOfTwo(NSUInteger x) {
   }
 }
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 - (void)userNotificationCenter:(UNUserNotificationCenter*)center
     didReceiveNotificationResponse:(UNNotificationResponse*)response
              withCompletionHandler:(void (^)(void))completionHandler NS_AVAILABLE_IOS(10_0) {
@@ -321,6 +326,7 @@ static BOOL IsPowerOfTwo(NSUInteger x) {
     }
   }
 }
+#endif
 
 - (BOOL)application:(UIApplication*)application
             openURL:(NSURL*)url
@@ -372,6 +378,7 @@ static BOOL IsPowerOfTwo(NSUInteger x) {
   return NO;
 }
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 - (void)application:(UIApplication*)application
     performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
                completionHandler:(void (^)(BOOL succeeded))completionHandler NS_AVAILABLE_IOS(9_0) {
@@ -388,6 +395,7 @@ static BOOL IsPowerOfTwo(NSUInteger x) {
     }
   }
 }
+#endif
 
 - (BOOL)application:(UIApplication*)application
     handleEventsForBackgroundURLSession:(nonnull NSString*)identifier

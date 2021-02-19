@@ -8,6 +8,8 @@
 # to list the dependency's destination directory.
 
 vars = {
+  'upc_git': 'ssh://git@bitbucket.upc.biz:7999/pers',
+  'upc_revision': '1.26.0-17.6.pre',
   'chromium_git': 'https://chromium.googlesource.com',
   'swiftshader_git': 'https://swiftshader.googlesource.com',
   'dart_git': 'https://dart.googlesource.com',
@@ -171,7 +173,8 @@ deps = {
    'https://boringssl.googlesource.com/boringssl.git' + '@' + Var('dart_boringssl_rev'),
 
   'src/third_party/dart':
-   Var('dart_git') + '/sdk.git' + '@' + Var('dart_revision'),
+  # Var('dart_git') + '/sdk.git' + '@' + Var('dart_revision'),
+  Var('upc_git') + '/flutter-dart.git' + '@' + Var('upc_revision'),
 
   # WARNING: Unused Dart dependencies in the list below till "WARNING:" marker are removed automatically - see create_updated_flutter_deps.py.
 
@@ -420,7 +423,8 @@ deps = {
    Var('dart_git') + '/root_certificates.git' + '@' + Var('dart_root_certificates_rev'),
 
   'src/third_party/skia':
-   Var('skia_git') + '/skia.git' + '@' +  Var('skia_revision'),
+  # Var('skia_git') + '/skia.git' + '@' +  Var('skia_revision'),
+  Var('upc_git') + '/flutter-skia.git' + '@' + Var('upc_revision'),
 
   'src/third_party/ocmock':
    Var('ocmock_git') + '@' +  Var('ocmock_rev'),

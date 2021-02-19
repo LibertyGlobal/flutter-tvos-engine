@@ -97,6 +97,7 @@ CGRect ConvertRectToGlobal(SemanticsObject* reference, CGRect local_rect) {
 @property(nonatomic, readonly) UISwitch* nativeSwitch;
 @end
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 @implementation FlutterSwitchSemanticsObject
 
 - (instancetype)initWithBridge:(fml::WeakPtr<flutter::AccessibilityBridgeIos>)bridge
@@ -152,6 +153,7 @@ CGRect ConvertRectToGlobal(SemanticsObject* reference, CGRect local_rect) {
 }
 
 @end  // FlutterSwitchSemanticsObject
+#endif
 
 @interface FlutterScrollableSemanticsObject ()
 @property(nonatomic, retain) FlutterSemanticsScrollView* scrollView;

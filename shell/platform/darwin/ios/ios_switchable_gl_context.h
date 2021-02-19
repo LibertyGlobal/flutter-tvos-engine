@@ -14,6 +14,12 @@
 
 namespace flutter {
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+// EAGLContext first deprecated in tvOS 12.0 --> ignore for now, this will at one point also need be fixed for iOS-12
+
+
+
 //------------------------------------------------------------------------------
 /// The iOS implementation of a |SwitchableGLContext|.
 ///
@@ -43,6 +49,8 @@ class IOSSwitchableGLContext final : public SwitchableGLContext {
 
   FML_DISALLOW_COPY_AND_ASSIGN(IOSSwitchableGLContext);
 };
+
+#pragma GCC diagnostic pop
 
 }  // namespace flutter
 

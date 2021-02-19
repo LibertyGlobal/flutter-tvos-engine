@@ -784,7 +784,9 @@ void FlutterPlatformViewsController::ResetFrameState() {
         (FlutterPlatformViewGestureRecognizersBlockingPolicy)blockingPolicy {
   self = [super initWithFrame:embeddedView.frame];
   if (self) {
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
     self.multipleTouchEnabled = YES;
+#endif
     _embeddedView = embeddedView;
     embeddedView.autoresizingMask =
         (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);

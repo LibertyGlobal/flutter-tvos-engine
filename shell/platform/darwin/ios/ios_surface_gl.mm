@@ -10,6 +10,11 @@
 
 namespace flutter {
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+// EAGLContext first deprecated in tvOS 12.0 --> ignore for now, this will at one point also need be fixed for iOS-12
+
+
 static IOSContextGL* CastToGLContext(const std::shared_ptr<IOSContext>& context) {
   return reinterpret_cast<IOSContextGL*>(context.get());
 }
@@ -96,4 +101,5 @@ bool IOSSurfaceGL::AllowsDrawingWhenGpuDisabled() const {
   return false;
 }
 
+#pragma GCC diagnostic pop
 }  // namespace flutter

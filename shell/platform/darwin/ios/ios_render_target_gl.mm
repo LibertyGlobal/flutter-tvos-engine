@@ -12,6 +12,10 @@
 
 namespace flutter {
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+// EAGLContext first deprecated in tvOS 12.0 --> ignore for now, this will at one point also need be fixed for iOS-12
+
 IOSRenderTargetGL::IOSRenderTargetGL(fml::scoped_nsobject<CAEAGLLayer> layer,
                                      fml::scoped_nsobject<EAGLContext> context)
     : layer_(std::move(layer)), context_(context) {
@@ -136,5 +140,7 @@ bool IOSRenderTargetGL::UpdateStorageSizeIfNecessary() {
 
   return true;
 }
+
+#pragma GCC diagnostic pop
 
 }  // namespace flutter

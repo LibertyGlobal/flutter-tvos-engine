@@ -21,6 +21,10 @@ std::unique_ptr<IOSSurface> IOSSurface::Create(std::shared_ptr<IOSContext> conte
   FML_DCHECK(layer);
   FML_DCHECK(context);
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+// EAGLContext first deprecated in tvOS 12.0 --> ignore for now, this will at one point also need be fixed for iOS-12
+
   if ([layer.get() isKindOfClass:[CAEAGLLayer class]]) {
     return std::make_unique<IOSSurfaceGL>(
         fml::scoped_nsobject<CAEAGLLayer>(
@@ -28,8 +32,10 @@ std::unique_ptr<IOSSurface> IOSSurface::Create(std::shared_ptr<IOSContext> conte
         std::move(context)                                          // context
     );
   }
+#pragma GCC diagnostic pop
 
 #if SHELL_ENABLE_METAL
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   if (@available(iOS METAL_IOS_VERSION_BASELINE, *)) {
     if ([layer.get() isKindOfClass:[CAMetalLayer class]]) {
       switch (context->GetBackend()) {
@@ -49,6 +55,7 @@ std::unique_ptr<IOSSurface> IOSSurface::Create(std::shared_ptr<IOSContext> conte
       }
     }
   }
+#endif 
 #endif  // SHELL_ENABLE_METAL
 
   return std::make_unique<IOSSurfaceSoftware>(std::move(layer),   // layer
