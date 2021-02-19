@@ -19,11 +19,15 @@ namespace flutter {
 #if SHELL_ENABLE_METAL
 bool ShouldUseMetalRenderer() {
   bool ios_version_supports_metal = false;
+#ifdef TARGET_OS_TV
+ ios_version_supports_metal = true; // min tvos GPU Family is same as IOS GPU family 2
+#else
   if (@available(iOS METAL_IOS_VERSION_BASELINE, *)) {
     auto device = MTLCreateSystemDefaultDevice();
     ios_version_supports_metal = [device supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily1_v3];
     [device release];
   }
+#endif
   return ios_version_supports_metal;
 }
 #endif  // SHELL_ENABLE_METAL
@@ -59,6 +63,14 @@ IOSRenderingAPI GetRenderingAPIForProcess(bool force_software) {
 }
 
 Class GetCoreAnimationLayerClassForRenderingAPI(IOSRenderingAPI rendering_api) {
+#ifdef TARGET_OS_TV
+#if !TARGET_OS_SIMULATOR
+  if(rendering_api == IOSRenderingAPI::kMetal) {
+        return [CAMetalLayer class];
+  }
+#endif
+      return [CALayer class];
+#else
   switch (rendering_api) {
     case IOSRenderingAPI::kSoftware:
       return [CALayer class];
@@ -73,6 +85,7 @@ Class GetCoreAnimationLayerClassForRenderingAPI(IOSRenderingAPI rendering_api) {
   }
   FML_CHECK(false) << "Unknown client rendering API";
   return [CALayer class];
+  #endif
 }
 
 }  // namespace flutter

@@ -37,6 +37,7 @@ namespace {
 #if FLUTTER_RUNTIME_MODE == FLUTTER_RUNTIME_MODE_DEBUG || \
     FLUTTER_RUNTIME_MODE == FLUTTER_RUNTIME_MODE_PROFILE
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 template <typename T>
 T ClearValue() {
   return nullptr;
@@ -88,6 +89,7 @@ void DeleteIO(io_object_t value) {
   IOObjectRelease(value);
 }
 
+
 std::optional<GpuUsageInfo> FindGpuUsageInfo(io_iterator_t iterator) {
   for (Scoped<io_registry_entry_t> regEntry(IOIteratorNext(iterator), DeleteIO); regEntry.get();
        regEntry.reset(IOIteratorNext(iterator))) {
@@ -106,17 +108,22 @@ std::optional<GpuUsageInfo> FindGpuUsageInfo(io_iterator_t iterator) {
   }
   return std::nullopt;
 }
+#endif
+
 
 [[maybe_unused]] std::optional<GpuUsageInfo> FindSimulatorGpuUsageInfo() {
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   Scoped<io_iterator_t> iterator(DeleteIO);
   if (IOServiceGetMatchingServices(kIOMasterPortDefault, IOServiceNameMatching("IntelAccelerator"),
                                    iterator.handle()) == kIOReturnSuccess) {
     return FindGpuUsageInfo(iterator.get());
   }
+#endif
   return std::nullopt;
 }
 
 [[maybe_unused]] std::optional<GpuUsageInfo> FindDeviceGpuUsageInfo() {
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   Scoped<io_iterator_t> iterator(DeleteIO);
   if (IOServiceGetMatchingServices(kIOMasterPortDefault, IOServiceNameMatching("sgx"),
                                    iterator.handle()) == kIOReturnSuccess) {
@@ -132,6 +139,7 @@ std::optional<GpuUsageInfo> FindGpuUsageInfo(io_iterator_t iterator) {
       }
     }
   }
+#endif
   return std::nullopt;
 }
 
@@ -146,6 +154,8 @@ std::optional<GpuUsageInfo> PollGpuUsage() {
   return FindSimulatorGpuUsageInfo();
 #elif TARGET_OS_IOS
   return FindDeviceGpuUsageInfo();
+#elif TARGET_OS_TV
+  return std::nullopt;
 #endif  // TARGET_IPHONE_SIMULATOR
 }
 }  // namespace
