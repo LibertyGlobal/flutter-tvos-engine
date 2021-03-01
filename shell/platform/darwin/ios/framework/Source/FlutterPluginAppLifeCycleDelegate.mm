@@ -221,8 +221,6 @@ static BOOL IsPowerOfTwo(NSUInteger x) {
 }
 
 #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 - (void)application:(UIApplication*)application
     didRegisterUserNotificationSettings:(UIUserNotificationSettings*)notificationSettings {
   for (NSObject<FlutterApplicationLifeCycleDelegate>* delegate in _delegates) {
@@ -234,7 +232,6 @@ static BOOL IsPowerOfTwo(NSUInteger x) {
     }
   }
 }
-#pragma GCC diagnostic pop
 #endif
 
 - (void)application:(UIApplication*)application
@@ -280,8 +277,6 @@ static BOOL IsPowerOfTwo(NSUInteger x) {
 }
 
 #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 - (void)application:(UIApplication*)application
     didReceiveLocalNotification:(UILocalNotification*)notification {
   for (NSObject<FlutterApplicationLifeCycleDelegate>* delegate in _delegates) {
@@ -293,7 +288,6 @@ static BOOL IsPowerOfTwo(NSUInteger x) {
     }
   }
 }
-#pragma GCC diagnostic pop
 #endif
 
 - (void)userNotificationCenter:(UNUserNotificationCenter*)center
