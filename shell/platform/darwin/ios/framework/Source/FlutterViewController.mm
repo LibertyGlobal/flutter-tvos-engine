@@ -439,13 +439,15 @@ static UIView* GetViewOrPlaceholder(UIView* existing_view) {
   auto placeholder = [[[UIView alloc] init] autorelease];
 
   placeholder.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+#ifdef TARGET_OS_TV 
+  placeholder.backgroundColor = UIColor.whiteColor;
+#else
   if (@available(iOS 13.0, *)) {
-#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
     placeholder.backgroundColor = UIColor.systemBackgroundColor;
-#endif
   } else {
     placeholder.backgroundColor = UIColor.whiteColor;
   }
+#endif
   placeholder.autoresizesSubviews = YES;
 
   // Only add the label when we know we have failed to enable tracing (and it was necessary).
@@ -843,7 +845,7 @@ static void SendFakeTouchEvent(FlutterEngine* engine,
                                        binaryMessenger:[self binaryMessenger]
                                                  codec:[FlutterJSONMessageCodec sharedInstance]
      ];
-#endif
+#endif //#ifdef TARGET_OS_TV
 
   if (_engine && _engineNeedsLaunch) {
     [_engine.get() launchEngine:nil libraryURI:nil entrypointArgs:nil];
