@@ -20,8 +20,7 @@ std::unique_ptr<IOSSurface> IOSSurface::Create(std::shared_ptr<IOSContext> conte
   FML_DCHECK(layer);
   FML_DCHECK(context);
 
-#if SHELL_ENABLE_METAL
-#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV) && SHELL_ENABLE_METAL
   if (@available(iOS METAL_IOS_VERSION_BASELINE, *)) {
     if ([layer.get() isKindOfClass:[CAMetalLayer class]]) {
       switch (context->GetBackend()) {
@@ -41,7 +40,6 @@ std::unique_ptr<IOSSurface> IOSSurface::Create(std::shared_ptr<IOSContext> conte
       }
     }
   }
-#endif 
 #endif  // SHELL_ENABLE_METAL
 
   return std::make_unique<IOSSurfaceSoftware>(layer,              // layer

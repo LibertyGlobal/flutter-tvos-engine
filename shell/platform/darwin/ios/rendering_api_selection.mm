@@ -63,20 +63,17 @@ IOSRenderingAPI GetRenderingAPIForProcess(bool force_software) {
 }
 
 Class GetCoreAnimationLayerClassForRenderingAPI(IOSRenderingAPI rendering_api) {
-#ifdef TARGET_OS_TV
-#if !TARGET_OS_SIMULATOR
-  if(rendering_api == IOSRenderingAPI::kMetal) {
-        return [CAMetalLayer class];
-  }
-#endif
-      return [CALayer class];
-#else
+
   switch (rendering_api) {
     case IOSRenderingAPI::kSoftware:
       return [CALayer class];
     case IOSRenderingAPI::kMetal:
       if (@available(iOS METAL_IOS_VERSION_BASELINE, *)) {
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunguarded-availability-new"
         return [CAMetalLayer class];
+#pragma GCC diagnostic pop
       }
       FML_CHECK(false) << "Metal availability should already have been checked";
       break;
@@ -85,7 +82,6 @@ Class GetCoreAnimationLayerClassForRenderingAPI(IOSRenderingAPI rendering_api) {
   }
   FML_CHECK(false) << "Unknown client rendering API";
   return [CALayer class];
-  #endif
 }
 
 }  // namespace flutter
