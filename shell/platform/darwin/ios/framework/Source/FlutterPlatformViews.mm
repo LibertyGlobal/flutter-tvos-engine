@@ -786,6 +786,8 @@ void FlutterPlatformViewsController::ResetFrameState() {
   if (self) {
 #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
     self.multipleTouchEnabled = YES;
+#else
+    self.userInteractionEnabled = NO;
 #endif
     _embeddedView = embeddedView;
     embeddedView.autoresizingMask =
