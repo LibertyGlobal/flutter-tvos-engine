@@ -18,6 +18,8 @@
 # to list the dependency's destination directory.
 
 vars = {
+  'lgi_git': 'https://github.com/LibertyGlobal',
+  'lgi_revision': '1.26.0-17.6.pre',
   'chromium_git': 'https://chromium.googlesource.com',
   'swiftshader_git': 'https://swiftshader.googlesource.com',
   'dart_git': 'https://dart.googlesource.com',
@@ -100,7 +102,8 @@ allowed_hosts = [
 ]
 
 deps = {
-  'src': 'https://github.com/flutter/buildroot.git' + '@' + 'e664d190b83ba911194a8a9517ae5f8bba3fcfaa',
+   #'src': 'https://github.com/flutter/buildroot.git' + '@' + 'e664d190b83ba911194a8a9517ae5f8bba3fcfaa',
+  'src': Var('lgi_git') + '/flutter-tvos-buildroot.git' + '@' + Var('lgi_revision'),
 
    # Fuchsia compatibility
    #
@@ -150,7 +153,8 @@ deps = {
    'https://boringssl.googlesource.com/boringssl.git' + '@' + Var('dart_boringssl_rev'),
 
   'src/third_party/dart':
-   Var('dart_git') + '/sdk.git' + '@' + Var('dart_revision'),
+  # Var('dart_git') + '/sdk.git' + '@' + Var('dart_revision'),
+  Var('lgi_git') + '/flutter-tvos-dart.git' + '@' + Var('lgi_revision'),
 
   # WARNING: Unused Dart dependencies in the list below till "WARNING:" marker are removed automatically - see create_updated_flutter_deps.py.
 
@@ -358,7 +362,7 @@ deps = {
    Var('dart_git') + '/root_certificates.git' + '@' + Var('dart_root_certificates_rev'),
 
   'src/third_party/skia':
-   Var('skia_git') + '/skia.git' + '@' +  Var('skia_revision'),
+  Var('lgi_git') + '/flutter-tvos-skia.git' + '@' + Var('lgi_revision'),
 
   'src/third_party/ocmock':
    Var('ocmock_git') + '@' +  Var('ocmock_tag'),
