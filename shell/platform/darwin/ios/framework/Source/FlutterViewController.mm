@@ -710,9 +710,9 @@ static void SendFakeTouchEvent(FlutterEngine* engine,
 }
 - (void)handleTap: (UITapGestureRecognizer *)recognizer withType:(NSString *)keyMapType keyType:(int)key {
     if (recognizer.state == UIGestureRecognizerStateBegan) {
-      [self sendTap:key withType:@"macos" ofType:@"keydown"];
+      [self sendTap:key withType:keyMapType ofType:@"keydown"];
     } else if (recognizer.state == UIGestureRecognizerStateEnded) {
-      [self sendTap:key withType:@"macos" ofType:@"keyup"];
+      [self sendTap:key withType:keyMapType ofType:@"keyup"];
     }
 }
 - (void)handleDownTap:(UITapGestureRecognizer *)recognizer {
@@ -735,9 +735,8 @@ static void SendFakeTouchEvent(FlutterEngine* engine,
     [self handleTap:recognizer withType:@"android" keyType:0x55 ];
 }
 - (void)handleMenuTap:(UITapGestureRecognizer *)recognizer {
-//    [self handleTap:recognizer withType:@"macos" keyType:0x6E];
-  // TODO: should send key so that UI can handle raw event without a popRoute being triggered
-    [self popRoute];
+    // pop route should be triggered on UI, to have correct behavior
+    [self handleTap:recognizer withType:@"android" keyType:0x04];
 }
 - (void)createRecognizerFor:(UIPressType) pressType action:(nullable SEL)action {
     UILongPressGestureRecognizer *tapGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:action];
