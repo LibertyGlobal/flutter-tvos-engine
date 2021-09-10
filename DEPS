@@ -9,7 +9,7 @@
 
 vars = {
   'upc_git': 'ssh://git@bitbucket.upc.biz:7999/pers',
-  'upc_revision': '2.2.2',
+  'upc_revision': '2.5.0',
   'chromium_git': 'https://chromium.googlesource.com',
   'swiftshader_git': 'https://swiftshader.googlesource.com',
   'dart_git': 'https://dart.googlesource.com',
