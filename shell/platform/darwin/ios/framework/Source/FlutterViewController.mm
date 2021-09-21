@@ -44,12 +44,12 @@ static NSString* const kFlutterRestorationStateAppData = @"FlutterRestorationSta
 NSNotificationName const FlutterSemanticsUpdateNotification = @"FlutterSemanticsUpdate";
 NSNotificationName const FlutterViewControllerWillDealloc = @"FlutterViewControllerWillDealloc";
 
-#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
+//#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 NSNotificationName const FlutterViewControllerHideHomeIndicator =
     @"FlutterViewControllerHideHomeIndicator";
 NSNotificationName const FlutterViewControllerShowHomeIndicator =
     @"FlutterViewControllerShowHomeIndicator";
-#endif
+//#endif
 
 // Struct holding data to help adapt system mouse/trackpad events to embedder events.
 typedef struct MouseState {
@@ -503,7 +503,7 @@ static UIView* GetViewOrPlaceholder(UIView* existing_view) {
 
 static void SendFakeTouchEvent(FlutterEngine* engine,
                                CGPoint location,
-                               flutter::PointerData::Change change) {
+                               flutter::PointerData::Change change) { 
   const CGFloat scale = [UIScreen mainScreen].scale;
   flutter::PointerData pointer_data = [[engine viewController] generatePointerDataForFake];
   pointer_data.physical_x = location.x * scale;
@@ -947,9 +947,9 @@ static void SendFakeTouchEvent(FlutterEngine* engine,
 
   [super viewWillAppear:animated];
 
-  if (@available(iOS 13.4, tvOS 10.0, *)) {
-    [self dispatchPresses:nil];
-  }
+  //if (@available(iOS 13.4, tvOS 13.4, *)) {
+  //  [self dispatchPresses:nil];
+  //}
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -1254,26 +1254,27 @@ static flutter::PointerData::DeviceKind DeviceKindFromTouchType(UITouch* touch) 
     // The ranges are the same. Origins are swapped.
     pointer_data.tilt = M_PI_2 - touch.altitudeAngle;
 
-    // iOS Documentation: azimuthAngleInView:
-    // With the tip of the stylus touching the screen, the value of this property is 0 radians
-    // when the cap end of the stylus (that is, the end opposite of the tip) points along the
-    // positive x axis of the device's screen. The azimuth angle increases as the user swings the
-    // cap end of the stylus in a clockwise direction around the tip.
-    //
-    // PointerData Documentation: orientation
-    // The angle of the stylus, in radians in the range:
-    //    -pi < orientation <= pi
-    // giving the angle of the axis of the stylus projected onto the input surface, relative to
-    // the positive y-axis of that surface (thus 0.0 indicates the stylus, if projected onto that
-    // surface, would go from the contact point vertically up in the positive y-axis direction, pi
-    // would indicate that the stylus would go down in the negative y-axis direction; pi/4 would
-    // indicate that the stylus goes up and to the right, -pi/2 would indicate that the stylus
-    // goes to the left, etc).
-    //
-    // Discussion:
-    // Sweep direction is the same. Phase of M_PI_2.
-    pointer_data.orientation = [touch azimuthAngleInView:nil] - M_PI_2;
-
+      // iOS Documentation: azimuthAngleInView:
+      // With the tip of the stylus touching the screen, the value of this property is 0 radians
+      // when the cap end of the stylus (that is, the end opposite of the tip) points along the
+      // positive x axis of the device's screen. The azimuth angle increases as the user swings the
+      // cap end of the stylus in a clockwise direction around the tip.
+      //
+      // PointerData Documentation: orientation
+      // The angle of the stylus, in radians in the range:
+      //    -pi < orientation <= pi
+      // giving the angle of the axis of the stylus projected onto the input surface, relative to
+      // the positive y-axis of that surface (thus 0.0 indicates the stylus, if projected onto that
+      // surface, would go from the contact point vertically up in the positive y-axis direction, pi
+      // would indicate that the stylus would go down in the negative y-axis direction; pi/4 would
+      // indicate that the stylus goes up and to the right, -pi/2 would indicate that the stylus
+      // goes to the left, etc).
+      //
+      // Discussion:
+      // Sweep direction is the same. Phase of M_PI_2.
+      pointer_data.orientation = [touch azimuthAngleInView:nil] - M_PI_2;
+    }
+    #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
     if (@available(iOS 13.4, *)) {
       if (event != nullptr) {
         pointer_data.buttons = (((event.buttonMask & UIEventButtonMaskPrimary) > 0)
@@ -1284,6 +1285,7 @@ static flutter::PointerData::DeviceKind DeviceKindFromTouchType(UITouch* touch) 
                                     : 0);
       }
     }
+    #endif
 
     packet->SetPointerData(pointer_index++, pointer_data);
 
@@ -1938,91 +1940,10 @@ static flutter::PointerData::DeviceKind DeviceKindFromTouchType(UITouch* touch) 
 // both places to capture keys both inside and outside of a text field, but have
 // slightly different implmentations.
 
-
-
-// #ifdef TARGET_OS_TV
-// + (NSDictionary*) macOSKeysMapping {
-//     return @{
-//         @(0x4F) : @(0x0000007c), //PhysicalKeyboardKey.arrowRight
-//         @(0x50) : @(0x0000007b), //PhysicalKeyboardKey.arrowLeft
-//         @(0x51) : @(0x0000007d), //PhysicalKeyboardKey.arrowDown
-//         @(0x52) : @(0x0000007e), //PhysicalKeyboardKey.arrowUp
-//         @(0x28) : @(0x00000024), //PhysicalKeyboardKey.enter
-//         @(0x29) : @(0x00000035), //PhysicalKeyboardKey.escape
-//         @(0x2A) : @(0x00000033), //PhysicalKeyboardKey.backspace
-//         @(0x2B) : @(0x00000030), //PhysicalKeyboardKey.tab
-//         @(0x2C) : @(0x00000031), //PhysicalKeyboardKey.space
-//         @(0x4B) : @(0x00000074), //PhysicalKeyboardKey.pageUp
-//         @(0x4E) : @(0x00000079), //PhysicalKeyboardKey.pageDown
-//         @(0xE1) : @(0x00000038), //PhysicalKeyboardKey.shiftLeft
-//         @(0xE5) : @(0x0000003c), //PhysicalKeyboardKey.shiftRight
-//     };
-// }
-
-// - (void)dispatchKeyEvent:(UIPress*)press ofType:(NSString*)type {
-//   // Temp soltion: map to MacOS keys, because there is no ios map in the flutter lib
-//   NSNumber *mappedKey = [[self class] macOSKeysMapping][@(press.key.keyCode)];
-//   if(mappedKey != nil) {
-//     NSMutableDictionary* keyMessage = [@{
-//       @"keymap" : @"macos",
-//       @"type" : type,
-//       @"keyCode" : mappedKey,
-//       @"modifiers" : @(press.key.modifierFlags),
-//     } mutableCopy];
-
-//   // Calling these methods on any other type of event will raise an exception.
-// //  if (press.type == NSEventTypeKeyDown || press.type == NSEventTypeKeyUp) {
-// //      keyMessage[@"characters"] = press.key.characters;
-// //      keyMessage[@"charactersIgnoringModifiers"] = press.key.charactersIgnoringModifiers;
-// //  }
-// // TODO: setting "characters" & "charactersIgnoringModifiers" are returned by ios as strings as description of the key, flutter lib expects this as a unicode (max 2bytes) value
-      
-// //    NSLog(@">>>>>> FlutterViewController->dispatchKeyEvent:  %@ \n", press.key);
-
-//   [self.keyEventChannel sendMessage:keyMessage];
-//   }
-// }
-// #endif
-
-// // Was removed 
-// // TODO: need check new logic 
-
-// - (void)dispatchPresses:(NSSet<UIPress*>*)presses API_AVAILABLE(ios(13.4), tvos(10.0)) {
-//   // # if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
-//   if (@available(iOS 13.4, *)) {
-//     for (UIPress* press in presses) {
-//       NSLog(@"got press %@ - %ld", press.key, press.phase);
-// 
-//       if (press.key == nil || press.phase == UIPressPhaseStationary ||
-//           press.phase == UIPressPhaseChanged) {
-//         continue;
-//       }
-//       //TODO: check if macOSKeysMapping is still needed here
-//       NSMutableDictionary* keyMessage = [[@{
-//         @"keymap" : @"ios",
-//         @"type" : @"unknown",
-//         @"keyCode" : @(press.key.keyCode),
-//         @"modifiers" : @(press.key.modifierFlags),
-//         @"characters" : press.key.characters,
-//         @"charactersIgnoringModifiers" : press.key.charactersIgnoringModifiers
-//       } mutableCopy] autorelease];
-// 
-//       if (press.phase == UIPressPhaseBegan) {
-//         keyMessage[@"type"] = @"keydown";
-//       } else if (press.phase == UIPressPhaseEnded || press.phase == UIPressPhaseCancelled) {
-//         keyMessage[@"type"] = @"keyup";
-//       }
-// 
-//       [[_engine.get() keyEventChannel] sendMessage:keyMessage];
-//       NSLog(@"sent message %@", keyMessage);
-//     }
-//   }
-//   // # endif
-// }
-
 - (void)pressesBegan:(NSSet<UIPress*>*)presses
-           withEvent:(UIPressesEvent*)event API_AVAILABLE(ios(9.0)) {
-  if (@available(iOS 13.4, *)) {
+           withEvent:(UIPressesEvent*)event API_AVAILABLE(ios(9.0),tvos(10.0)) {     
+  #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)              
+  if (@available(iOS 13.4, tvOS 13.4, *)) {
     for (UIPress* press in presses) {
       [self handlePressEvent:[[[FlutterUIPressProxy alloc] initWithPress:press
                                                                withEvent:event] autorelease]
@@ -2033,11 +1954,13 @@ static flutter::PointerData::DeviceKind DeviceKindFromTouchType(UITouch* touch) 
   } else {
     [super pressesBegan:presses withEvent:event];
   }
+  #endif
 }
 
 - (void)pressesChanged:(NSSet<UIPress*>*)presses
-             withEvent:(UIPressesEvent*)event API_AVAILABLE(ios(9.0)) {
-  if (@available(iOS 13.4, *)) {
+             withEvent:(UIPressesEvent*)event API_AVAILABLE(ios(9.0),tvos(10.0)) {
+  #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)                         
+  if (@available(iOS 13.4, tvOS 13.4, *)) {
     for (UIPress* press in presses) {
       [self handlePressEvent:[[[FlutterUIPressProxy alloc] initWithPress:press
                                                                withEvent:event] autorelease]
@@ -2048,11 +1971,13 @@ static flutter::PointerData::DeviceKind DeviceKindFromTouchType(UITouch* touch) 
   } else {
     [super pressesChanged:presses withEvent:event];
   }
+  #endif  
 }
 
 - (void)pressesEnded:(NSSet<UIPress*>*)presses
-           withEvent:(UIPressesEvent*)event API_AVAILABLE(ios(9.0)) {
-  if (@available(iOS 13.4, *)) {
+           withEvent:(UIPressesEvent*)event API_AVAILABLE(ios(9.0),tvos(10.0)) {
+  #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)                                    
+  if (@available(iOS 13.4, tvOS 13.4, *)) {
     for (UIPress* press in presses) {
       [self handlePressEvent:[[[FlutterUIPressProxy alloc] initWithPress:press
                                                                withEvent:event] autorelease]
@@ -2063,11 +1988,13 @@ static flutter::PointerData::DeviceKind DeviceKindFromTouchType(UITouch* touch) 
   } else {
     [super pressesEnded:presses withEvent:event];
   }
+  #endif   
 }
 
 - (void)pressesCancelled:(NSSet<UIPress*>*)presses
-               withEvent:(UIPressesEvent*)event API_AVAILABLE(ios(9.0)) {
-  if (@available(iOS 13.4, *)) {
+               withEvent:(UIPressesEvent*)event API_AVAILABLE(ios(9.0),tvos(10.0)) {
+  #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)                                        
+  if (@available(iOS 13.4, tvOS 13.4, *)) {
     for (UIPress* press in presses) {
       [self handlePressEvent:[[[FlutterUIPressProxy alloc] initWithPress:press
                                                                withEvent:event] autorelease]
@@ -2078,6 +2005,7 @@ static flutter::PointerData::DeviceKind DeviceKindFromTouchType(UITouch* touch) 
   } else {
     [super pressesCancelled:presses withEvent:event];
   }
+  #endif
 }
 
 #pragma mark - Orientation updates

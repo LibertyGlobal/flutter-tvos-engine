@@ -105,7 +105,7 @@ static NSString* getEventCharacters(NSString* characters, UIKeyboardHIDUsage key
 }
 
 - (void)handlePress:(nonnull FlutterUIPressProxy*)press
-           callback:(nonnull FlutterAsyncKeyCallback)callback API_AVAILABLE(ios(13.4)) {
+           callback:(nonnull FlutterAsyncKeyCallback)callback API_AVAILABLE(ios(13.4)) {          
   if (@available(iOS 13.4, *)) {
     // no-op
   } else {
