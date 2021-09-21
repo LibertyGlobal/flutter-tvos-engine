@@ -69,7 +69,7 @@ static constexpr CFTimeInterval kDistantFuture = 1.0e10;
 }
 
 - (void)handlePress:(nonnull FlutterUIPressProxy*)press
-         nextAction:(nonnull void (^)())next API_AVAILABLE(ios(13.4)) {
+         nextAction:(nonnull void (^)())next API_AVAILABLE(ios(13.4)) {         
   if (@available(iOS 13.4, *)) {
     // no-op
   } else {

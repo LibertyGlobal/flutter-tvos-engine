@@ -194,8 +194,10 @@ using namespace flutter;
   // We opt out of view controller based status bar visibility since we want
   // to be able to modify this on the fly. The key used is
   // UIViewControllerBasedStatusBarAppearance
+  #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   [UIApplication sharedApplication].statusBarHidden =
       ![mode isEqualToString:@"SystemUiMode.edgeToEdge"];
+  #endif    
   if ([mode isEqualToString:@"SystemUiMode.edgeToEdge"]) {
     [[NSNotificationCenter defaultCenter]
         postNotificationName:FlutterViewControllerShowHomeIndicator
