@@ -797,11 +797,13 @@ static BOOL IsSelectionRectCloserToPoint(CGPoint point,
     }
     _selectionRects = [[NSArray alloc] init];
 
+  #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
     if (@available(iOS 14.0, *)) {
       UIScribbleInteraction* interaction =
           [[[UIScribbleInteraction alloc] initWithDelegate:self] autorelease];
       [self addInteraction:interaction];
     }
+  #endif
   }
 
   return self;

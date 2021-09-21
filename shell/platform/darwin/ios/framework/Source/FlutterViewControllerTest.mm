@@ -918,19 +918,21 @@ typedef enum UIAccessibilityContrast : NSInteger {
   engine.viewController = nil;
 }
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)  
 - (void)testHideOverlay {
   FlutterDartProject* project = [[FlutterDartProject alloc] init];
   FlutterEngine* engine = [[FlutterEngine alloc] initWithName:@"foobar" project:project];
   [engine createShell:@"" libraryURI:@"" initialRoute:nil];
   FlutterViewController* realVC = [[FlutterViewController alloc] initWithEngine:engine
                                                                         nibName:nil
-                                                                         bundle:nil];
+                                                                       bundle:nil];
   XCTAssertFalse(realVC.prefersHomeIndicatorAutoHidden, @"");
   [[NSNotificationCenter defaultCenter] postNotificationName:FlutterViewControllerHideHomeIndicator
                                                       object:nil];
   XCTAssertTrue(realVC.prefersHomeIndicatorAutoHidden, @"");
   engine.viewController = nil;
 }
+#endif
 
 - (void)testNotifyLowMemory {
   FlutterEnginePartialMock* mockEngine = [[FlutterEnginePartialMock alloc] init];

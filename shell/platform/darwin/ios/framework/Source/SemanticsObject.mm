@@ -433,12 +433,14 @@ CGRect ConvertRectToGlobal(SemanticsObject* reference, CGRect local_rect) {
         break;
       }
       case flutter::StringAttributeType::kSpellOut: {
-        if (@available(iOS 13.0, *)) {
+        #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)   
+        if (@available(iOS 13.0, tvOS 13.0, *)) {
           NSDictionary* attributeDict = @{
             UIAccessibilitySpeechAttributeSpellOut : @YES,
           };
           [attributedString setAttributes:attributeDict range:range];
         }
+        #endif
         break;
       }
     }
