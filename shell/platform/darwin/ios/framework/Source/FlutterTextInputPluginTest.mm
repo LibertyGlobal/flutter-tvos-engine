@@ -91,8 +91,10 @@ FLUTTER_ASSERT_ARC
   viewController = [[FlutterViewController alloc] init];
   textInputPlugin.viewController = viewController;
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   // Clear pasteboard between tests.
   UIPasteboard.generalPasteboard.items = @[];
+#endif
 }
 
 - (void)tearDown {
@@ -534,9 +536,10 @@ FLUTTER_ASSERT_ARC
   [self setClientId:123 configuration:config];
   NSArray<FlutterTextInputView*>* inputFields = self.installedInputViews;
   FlutterTextInputView* inputView = inputFields[0];
-
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   UIPasteboard.generalPasteboard.color = UIColor.redColor;
   XCTAssertNil(UIPasteboard.generalPasteboard.string);
+#endif
   XCTAssertFalse([inputView canPerformAction:@selector(paste:) withSender:nil]);
   [inputView paste:nil];
 
