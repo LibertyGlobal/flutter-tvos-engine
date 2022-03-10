@@ -27,8 +27,14 @@ typedef NS_ENUM(NSInteger, FlutterScribbleInteractionStatus) {
   FlutterScribbleInteractionStatusEnding,
 };
 
+#ifdef TARGET_OS_TV
+@interface FlutterTextInputPlugin
+    : NSObject <FlutterKeySecondaryResponder>
+#else
 @interface FlutterTextInputPlugin
     : NSObject <FlutterKeySecondaryResponder, UIIndirectScribbleInteractionDelegate>
+#endif
+
 
 @property(nonatomic, assign) UIViewController* viewController;
 @property(nonatomic, assign) id<FlutterIndirectScribbleDelegate> indirectScribbleDelegate;
@@ -117,7 +123,11 @@ API_AVAILABLE(ios(13.0)) @interface FlutterTextPlaceholder : UITextPlaceholder
 #if FLUTTER_RUNTIME_MODE == FLUTTER_RUNTIME_MODE_DEBUG
 FLUTTER_DARWIN_EXPORT
 #endif
+#ifdef TARGET_OS_TV
+@interface FlutterTextInputView : UIView <UITextInput>
+#else
 @interface FlutterTextInputView : UIView <UITextInput, UIScribbleInteractionDelegate>
+#endif
 
 // UITextInput
 @property(nonatomic, readonly) NSMutableString* text;

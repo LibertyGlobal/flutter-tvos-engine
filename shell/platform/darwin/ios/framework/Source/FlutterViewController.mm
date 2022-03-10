@@ -1003,8 +1003,10 @@ static void SendFakeTouchEvent(FlutterEngine* engine,
 
   [_displayLink release];
   _scrollView.get().delegate = nil;
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV) 
   _hoverGestureRecognizer.delegate = nil;
   [_hoverGestureRecognizer release];
+#endif 
   _discreteScrollingPanGestureRecognizer.delegate = nil;
   [_discreteScrollingPanGestureRecognizer release];
   _continuousScrollingPanGestureRecognizer.delegate = nil;
@@ -1433,8 +1435,8 @@ static flutter::PointerData::DeviceKind DeviceKindFromTouchType(UITouch* touch) 
   CGRect screenRect = [[UIScreen mainScreen] bounds];
 
   // Get the animation duration
-  NSTimeInterval duration =
-      [[info objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+  
+  NSTimeInterval duration = 0;
 
   // Considering the iPad's split keyboard, Flutter needs to check if the keyboard frame is present
   // in the screen to see if the keyboard is visible.
