@@ -1001,6 +1001,7 @@ static BOOL IsSelectionRectCloserToPoint(CGPoint point,
 
 // Checks whether Scribble features are possibly available – meaning this is an iPad running iOS
 // 14 or higher.
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 - (BOOL)isScribbleAvailable {
   if (@available(iOS 14.0, *)) {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -1010,6 +1011,7 @@ static BOOL IsSelectionRectCloserToPoint(CGPoint point,
   return NO;
 }
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 - (void)scribbleInteractionWillBeginWriting:(UIScribbleInteraction*)interaction
     API_AVAILABLE(ios(14.0)) {
   _scribbleInteractionStatus = FlutterScribbleInteractionStatusStarted;
@@ -1031,6 +1033,7 @@ static BOOL IsSelectionRectCloserToPoint(CGPoint point,
     API_AVAILABLE(ios(14.0)) {
   return NO;
 }
+#endif
 
 #pragma mark - UIResponder Overrides
 
@@ -2475,6 +2478,7 @@ return false;
 
 #pragma mark UIIndirectScribbleInteractionDelegate
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 - (BOOL)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
                    isElementFocused:(UIScribbleElementIdentifier)elementIdentifier
     API_AVAILABLE(ios(14.0)) {
@@ -2550,12 +2554,13 @@ return false;
                         completion(elements);
                       }];
 }
+#endif
 
 #pragma mark - Methods related to Scribble support
 
 - (void)setupIndirectScribbleInteraction:(id<FlutterViewResponder>)viewResponder {
-#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   if (_viewResponder != viewResponder) {
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
     if (@available(iOS 14.0, *)) {
       UIView* parentView = viewResponder.view;
       if (parentView != nil) {
@@ -2564,9 +2569,9 @@ return false;
         [parentView addInteraction:scribbleInteraction];
       }
     }
+#endif
   }
   _viewResponder = viewResponder;
-#endif
 }
 
 - (void)resetViewResponder {
