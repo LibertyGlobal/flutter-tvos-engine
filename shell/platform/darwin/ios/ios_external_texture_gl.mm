@@ -17,6 +17,10 @@
 
 namespace flutter {
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+// EAGLContext first deprecated in tvOS 12.0 --> ignore for now, this will at one point also need be fixed for iOS-12
+
 IOSExternalTextureGL::IOSExternalTextureGL(int64_t textureId,
                                            NSObject<FlutterTexture>* externalTexture,
                                            fml::scoped_nsobject<EAGLContext> context)
@@ -197,4 +201,5 @@ void IOSExternalTextureGL::OnTextureUnregistered() {
   }
 }
 
+#pragma GCC diagnostic pop    
 }  // namespace flutter

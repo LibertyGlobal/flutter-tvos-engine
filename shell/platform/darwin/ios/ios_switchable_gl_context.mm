@@ -8,6 +8,10 @@
 
 namespace flutter {
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+// EAGLContext first deprecated in tvOS 12.0 --> ignore for now, this will at one point also need be fixed for iOS-12
+
 IOSSwitchableGLContext::IOSSwitchableGLContext(EAGLContext* context) : context_(context){};
 
 bool IOSSwitchableGLContext::SetCurrent() {
@@ -22,4 +26,6 @@ bool IOSSwitchableGLContext::RemoveCurrent() {
   FML_DCHECK_CREATION_THREAD_IS_CURRENT(checker);
   return [EAGLContext setCurrentContext:previous_context_];
 };
-}  // namespace flutter
+
+#pragma GCC diagnostic pop
+}

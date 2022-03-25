@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#include "flutter/shell/platform/common/text_editing_delta.h"
+#import "flutter/shell/platform/common/text_editing_delta.h"
 #import "flutter/shell/platform/darwin/common/framework/Headers/FlutterChannels.h"
 #import "flutter/shell/platform/darwin/ios/framework/Source/FlutterIndirectScribbleDelegate.h"
 #import "flutter/shell/platform/darwin/ios/framework/Source/FlutterKeySecondaryResponder.h"
@@ -26,8 +26,14 @@ typedef NS_ENUM(NSInteger, FlutterScribbleInteractionStatus) {
   FlutterScribbleInteractionStatusEnding,
 };
 
+#ifdef TARGET_OS_TV
+@interface FlutterTextInputPlugin
+    : NSObject <FlutterKeySecondaryResponder>
+#else
 @interface FlutterTextInputPlugin
     : NSObject <FlutterKeySecondaryResponder, UIIndirectScribbleInteractionDelegate>
+#endif
+
 
 @property(nonatomic, assign) id<FlutterTextInputDelegate> textInputDelegate;
 @property(nonatomic, assign) UIViewController* viewController;
@@ -110,7 +116,11 @@ API_AVAILABLE(ios(13.0)) @interface FlutterTextPlaceholder : UITextPlaceholder
 #if FLUTTER_RUNTIME_MODE == FLUTTER_RUNTIME_MODE_DEBUG
 FLUTTER_DARWIN_EXPORT
 #endif
+#ifdef TARGET_OS_TV
+@interface FlutterTextInputView : UIView <UITextInput>
+#else
 @interface FlutterTextInputView : UIView <UITextInput, UIScribbleInteractionDelegate>
+#endif
 
 // UITextInput
 @property(nonatomic, readonly) NSMutableString* text;

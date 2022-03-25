@@ -14,7 +14,9 @@
 
 namespace {
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 constexpr char kTextPlainFormat[] = "text/plain";
+#endif
 const UInt32 kKeyPressClickSoundId = 1306;
 
 }  // namespaces
@@ -107,6 +109,7 @@ using namespace flutter;
     return;
   }
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   if (@available(iOS 10, *)) {
     if ([@"HapticFeedbackType.lightImpact" isEqualToString:feedbackType]) {
       [[[[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleLight] autorelease]
@@ -121,11 +124,13 @@ using namespace flutter;
       [[[[UISelectionFeedbackGenerator alloc] init] autorelease] selectionChanged];
     }
   }
+#endif
 }
 
 - (void)setSystemChromePreferredOrientations:(NSArray*)orientations {
   UIInterfaceOrientationMask mask = 0;
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   if (orientations.count == 0) {
     mask |= UIInterfaceOrientationMaskAll;
   } else {
@@ -141,6 +146,7 @@ using namespace flutter;
       }
     }
   }
+#endif
 
   if (!mask) {
     return;
@@ -162,6 +168,7 @@ using namespace flutter;
   // We opt out of view controller based status bar visibility since we want
   // to be able to modify this on the fly. The key used is
   // UIViewControllerBasedStatusBarAppearance
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   [UIApplication sharedApplication].statusBarHidden =
       ![overlays containsObject:@"SystemUiOverlay.top"];
   if ([overlays containsObject:@"SystemUiOverlay.bottom"]) {
@@ -173,6 +180,7 @@ using namespace flutter;
         postNotificationName:FlutterViewControllerHideHomeIndicator
                       object:nil];
   }
+#endif
 }
 
 - (void)setSystemChromeEnabledSystemUIMode:(NSString*)mode {
@@ -182,8 +190,10 @@ using namespace flutter;
   // We opt out of view controller based status bar visibility since we want
   // to be able to modify this on the fly. The key used is
   // UIViewControllerBasedStatusBarAppearance
+  #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   [UIApplication sharedApplication].statusBarHidden =
       ![mode isEqualToString:@"SystemUiMode.edgeToEdge"];
+  #endif    
   if ([mode isEqualToString:@"SystemUiMode.edgeToEdge"]) {
     [[NSNotificationCenter defaultCenter]
         postNotificationName:FlutterViewControllerShowHomeIndicator
@@ -205,6 +215,7 @@ using namespace flutter;
     return;
   }
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   UIStatusBarStyle statusBarStyle;
   if ([brightness isEqualToString:@"Brightness.dark"]) {
     statusBarStyle = UIStatusBarStyleLightContent;
@@ -233,6 +244,7 @@ using namespace flutter;
     // in favor of delegating to the view controller
     [[UIApplication sharedApplication] setStatusBarStyle:statusBarStyle];
   }
+#endif  
 }
 
 - (void)popSystemNavigator:(BOOL)isAnimated {
@@ -253,26 +265,31 @@ using namespace flutter;
 }
 
 - (NSDictionary*)getClipboardData:(NSString*)format {
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   UIPasteboard* pasteboard = [UIPasteboard generalPasteboard];
   if (!format || [format isEqualToString:@(kTextPlainFormat)]) {
     NSString* stringInPasteboard = pasteboard.string;
     // The pasteboard may contain an item but it may not be a string (an image for instance).
     return stringInPasteboard == nil ? nil : @{@"text" : stringInPasteboard};
   }
+#endif
   return nil;
 }
 
 - (void)setClipboardData:(NSDictionary*)data {
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   UIPasteboard* pasteboard = [UIPasteboard generalPasteboard];
   if (data[@"text"]) {
     pasteboard.string = data[@"text"];
   } else {
     pasteboard.string = @"null";
   }
+#endif
 }
 
 - (NSDictionary*)clipboardHasStrings {
   bool hasStrings = false;
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   UIPasteboard* pasteboard = [UIPasteboard generalPasteboard];
   if (@available(iOS 10, *)) {
     hasStrings = pasteboard.hasStrings;
@@ -280,6 +297,7 @@ using namespace flutter;
     NSString* stringInPasteboard = pasteboard.string;
     hasStrings = stringInPasteboard != nil;
   }
+#endif
   return @{@"value" : @(hasStrings)};
 }
 

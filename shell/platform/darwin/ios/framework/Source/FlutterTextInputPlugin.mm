@@ -716,7 +716,10 @@ static BOOL IsScribbleAvailable() {
 @property(nonatomic, assign) CGRect markedRect;
 @property(nonatomic) BOOL isVisibleToAutofill;
 @property(nonatomic, assign) BOOL accessibilityEnabled;
+
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 @property(nonatomic, retain) UITextInteraction* textInteraction API_AVAILABLE(ios(13.0));
+#endif
 
 - (void)setEditableTransform:(NSArray*)matrix;
 @end
@@ -777,11 +780,13 @@ static BOOL IsScribbleAvailable() {
     }
     _selectionRects = [[NSArray alloc] init];
 
+  #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
     if (@available(iOS 14.0, *)) {
       UIScribbleInteraction* interaction =
           [[[UIScribbleInteraction alloc] initWithDelegate:self] autorelease];
       [self addInteraction:interaction];
     }
+  #endif
   }
 
   return self;
@@ -897,7 +902,9 @@ static BOOL IsScribbleAvailable() {
   [_selectionRects release];
   [_markedTextStyle release];
   [_textContentType release];
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   [_textInteraction release];
+#endif
   [super dealloc];
 }
 
@@ -1006,6 +1013,7 @@ static BOOL IsScribbleAvailable() {
 
 #pragma mark UIScribbleInteractionDelegate
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 - (void)scribbleInteractionWillBeginWriting:(UIScribbleInteraction*)interaction
     API_AVAILABLE(ios(14.0)) {
   _scribbleInteractionStatus = FlutterScribbleInteractionStatusStarted;
@@ -1027,6 +1035,7 @@ static BOOL IsScribbleAvailable() {
     API_AVAILABLE(ios(14.0)) {
   return NO;
 }
+#endif
 
 #pragma mark - UIResponder Overrides
 
@@ -1039,6 +1048,7 @@ static BOOL IsScribbleAvailable() {
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   // When scribble is available, the FlutterTextInputView will display the native toolbar unless
   // these text editing actions are disabled.
   if (IsScribbleAvailable()) {
@@ -1050,24 +1060,32 @@ static BOOL IsScribbleAvailable() {
   }
 
   return [super canPerformAction:action withSender:sender];
+#endif
+return false;
 }
 
 #pragma mark - UIResponderStandardEditActions Overrides
 
 - (void)cut:(id)sender {
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   [UIPasteboard generalPasteboard].string = [self textInRange:_selectedTextRange];
   [self replaceRange:_selectedTextRange withText:@""];
+#endif
 }
 
 - (void)copy:(id)sender {
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   [UIPasteboard generalPasteboard].string = [self textInRange:_selectedTextRange];
+#endif
 }
 
 - (void)paste:(id)sender {
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV) 
   NSString* pasteboardString = [UIPasteboard generalPasteboard].string;
   if (pasteboardString != nil) {
     [self insertText:pasteboardString];
   }
+#endif
 }
 
 - (void)delete:(id)sender {
@@ -1688,11 +1706,13 @@ static BOOL IsScribbleAvailable() {
   // This makes sure UITextSelectionView.interactionAssistant is not nil so
   // UITextSelectionView has access to this view (and its bounds). Otherwise
   // floating cursor breaks: https://github.com/flutter/flutter/issues/70267.
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   if (@available(iOS 13.0, *)) {
     self.textInteraction = [UITextInteraction textInteractionForMode:UITextInteractionModeEditable];
     self.textInteraction.textInput = self;
     [self addInteraction:_textInteraction];
   }
+#endif
   [self.textInputDelegate flutterTextInputView:self
                           updateFloatingCursor:FlutterFloatingCursorDragStateStart
                                     withClient:_textInputClient
@@ -1709,12 +1729,14 @@ static BOOL IsScribbleAvailable() {
 
 - (void)endFloatingCursor {
   _isFloatingCursorActive = false;
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   if (@available(iOS 13.0, *)) {
     if (_textInteraction != NULL) {
       [self removeInteraction:_textInteraction];
       self.textInteraction = NULL;
     }
   }
+#endif  
   [self.textInputDelegate flutterTextInputView:self
                           updateFloatingCursor:FlutterFloatingCursorDragStateEnd
                                     withClient:_textInputClient
@@ -2360,6 +2382,7 @@ static BOOL IsScribbleAvailable() {
 
 #pragma mark UIIndirectScribbleInteractionDelegate
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 - (BOOL)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
                    isElementFocused:(UIScribbleElementIdentifier)elementIdentifier
     API_AVAILABLE(ios(14.0)) {
@@ -2435,11 +2458,13 @@ static BOOL IsScribbleAvailable() {
                         completion(elements);
                       }];
 }
+#endif
 
 #pragma mark - Methods related to Scribble support
 
 - (void)setupIndirectScribbleInteraction:(id<FlutterViewResponder>)viewResponder {
   if (_viewResponder != viewResponder) {
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
     if (@available(iOS 14.0, *)) {
       UIView* parentView = viewResponder.view;
       if (parentView != nil) {
@@ -2448,6 +2473,7 @@ static BOOL IsScribbleAvailable() {
         [parentView addInteraction:scribbleInteraction];
       }
     }
+#endif
   }
   _viewResponder = viewResponder;
 }
