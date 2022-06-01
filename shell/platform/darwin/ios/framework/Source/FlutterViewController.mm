@@ -11,6 +11,7 @@
 
 #ifdef TARGET_OS_TV
 #include <GameController/GameController.h>
+#include <MediaPlayer/MediaPlayer.h>
 #endif
 
 #include "flutter/fml/memory/weak_ptr.h"
@@ -784,6 +785,12 @@ static void SendFakeTouchEvent(FlutterEngine* engine,
     // pop route should be triggered on UI, to have correct behavior
     [self handleTap:recognizer withType:@"android" keyType:0x04];
 }
+- (void)handlePageUpTap:(UITapGestureRecognizer *)recognizer API_AVAILABLE(tvos(14.3)) {
+    [self handleTap:recognizer withType:@"android" keyType:0x5C];
+}
+- (void)handlePageDownTap:(UITapGestureRecognizer *)recognizer API_AVAILABLE(tvos(14.3)) {
+    [self handleTap:recognizer withType:@"android" keyType:0x5D];
+}
 - (void)createRecognizerFor:(UIPressType) pressType action:(nullable SEL)action {
     UILongPressGestureRecognizer *tapGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:action];
     tapGestureRecognizer.allowedPressTypes = @[@(pressType)];
@@ -825,6 +832,28 @@ static void SendFakeTouchEvent(FlutterEngine* engine,
     }
 }
 
+-(void) setupWalnutController {
+MPRemoteCommandCenter *commandCenter = [MPRemoteCommandCenter sharedCommandCenter];
+
+[commandCenter.seekForwardCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
+    if (((MPSeekCommandEvent *)event).type == 0){
+      [self sendTap:0x5A withType:@"android" ofType:@"keydown"];
+    } else if (((MPSeekCommandEvent *)event).type == 1){
+      [self sendTap:0x5A withType:@"android" ofType:@"keyup"];
+    }
+    return MPRemoteCommandHandlerStatusSuccess;
+}];
+
+[commandCenter.seekBackwardCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
+    if (((MPSeekCommandEvent *)event).type == 0){
+      [self sendTap:0x59 withType:@"android" ofType:@"keydown"];
+    } else if (((MPSeekCommandEvent *)event).type == 1){
+      [self sendTap:0x59 withType:@"android" ofType:@"keyup"];
+    }
+    return MPRemoteCommandHandlerStatusSuccess;
+}];
+}
+
 - (void)controllerConnected:(NSNotification*)notification {
     [self setupControllers];
 }
@@ -843,8 +872,22 @@ static void SendFakeTouchEvent(FlutterEngine* engine,
   [self createRecognizerFor:UIPressTypeSelect action:@selector(handleCenterTap:)];
   [self createRecognizerFor:UIPressTypePlayPause action:@selector(handlePlayPauseTap:)];
   [self createRecognizerFor:UIPressTypeMenu action:@selector(handleMenuTap:)];
-    
+
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunguarded-availability-new"
+
+  if ([self respondsToSelector:@selector(handlePageUpTap:)]) {
+    [self createRecognizerFor:UIPressTypePageUp action:@selector(handlePageUpTap:)];
+  }
+  
+  if ([self respondsToSelector:@selector(handlePageDownTap:)]) {
+    [self createRecognizerFor:UIPressTypePageDown action:@selector(handlePageDownTap:)];
+  }
+
+  #pragma clang diagnostic pop  
+
   [self setupControllers];
+  [self setupWalnutController];
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerConnected:) name:GCControllerDidConnectNotification object:nil];
 
     self.keyEventChannel =
