@@ -203,6 +203,7 @@ source_set("flutter_framework_source") {
     "QuartzCore.framework",
     "UIKit.framework",
     "GameController.framework",
+    "MediaPlayer.framework",
   ]
   if (flutter_runtime_mode == "profile" || flutter_runtime_mode == "debug") {
     # This is required by the profiler_metrics_ios.mm to get GPU statistics.
