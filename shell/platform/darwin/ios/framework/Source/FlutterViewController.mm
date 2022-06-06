@@ -786,10 +786,10 @@ static void SendFakeTouchEvent(FlutterEngine* engine,
     [self handleTap:recognizer withType:@"android" keyType:0x04];
 }
 - (void)handlePageUpTap:(UITapGestureRecognizer *)recognizer API_AVAILABLE(tvos(14.3)) {
-    [self handleTap:recognizer withType:@"android" keyType:0x5C];
+    [self handleTap:recognizer withType:@"android" keyType:0xA6];
 }
 - (void)handlePageDownTap:(UITapGestureRecognizer *)recognizer API_AVAILABLE(tvos(14.3)) {
-    [self handleTap:recognizer withType:@"android" keyType:0x5D];
+    [self handleTap:recognizer withType:@"android" keyType:0xA7];
 }
 - (void)createRecognizerFor:(UIPressType) pressType action:(nullable SEL)action {
     UILongPressGestureRecognizer *tapGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:action];
