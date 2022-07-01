@@ -92,10 +92,11 @@ CGRect ConvertRectToGlobal(SemanticsObject* reference, CGRect local_rect) {
 }
 
 }  // namespace
-
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 @interface FlutterSwitchSemanticsObject ()
 @property(nonatomic, readonly) UISwitch* nativeSwitch;
 @end
+#endif
 
 #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 @implementation FlutterSwitchSemanticsObject
