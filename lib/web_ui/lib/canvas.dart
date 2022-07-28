@@ -131,7 +131,6 @@ abstract class Picture {
   static PictureEventCallback? onCreate;
   static PictureEventCallback? onDispose;
   Future<Image> toImage(int width, int height);
-  Image toImageSync(int width, int height);
   void dispose();
   bool get debugDisposed;
   int get approximateBytesUsed;
