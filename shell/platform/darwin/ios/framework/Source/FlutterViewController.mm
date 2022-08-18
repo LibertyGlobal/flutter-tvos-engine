@@ -373,6 +373,12 @@ typedef enum UIAccessibilityContrast : NSInteger {
                  name:UIAccessibilityDarkerSystemColorsStatusDidChangeNotification
                object:nil];
 
+  [center addObserver:self
+             selector:@selector(onUserSettingsChanged:)
+                 name:UIContentSizeCategoryDidChangeNotification
+               object:nil];
+
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   if (@available(iOS 13.0, *)) {
     [center addObserver:self
                selector:@selector(onAccessibilityStatusChanged:)
@@ -380,12 +386,6 @@ typedef enum UIAccessibilityContrast : NSInteger {
                  object:nil];
   }
 
-  [center addObserver:self
-             selector:@selector(onUserSettingsChanged:)
-                 name:UIContentSizeCategoryDidChangeNotification
-               object:nil];
-
-#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   [center addObserver:self
              selector:@selector(onHideHomeIndicatorNotification:)
                  name:FlutterViewControllerHideHomeIndicator
@@ -1497,6 +1497,7 @@ static flutter::PointerData::DeviceKind DeviceKindFromTouchType(UITouch* touch) 
 }
 
 - (void)keyboardWillBeHidden:(NSNotification*)notification {
+   #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   NSDictionary* info = [notification userInfo];
 
   if (@available(iOS 9, *)) {
@@ -1520,6 +1521,7 @@ static flutter::PointerData::DeviceKind DeviceKindFromTouchType(UITouch* touch) 
     NSTimeInterval duration =
         [[info objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     [self startKeyBoardAnimation:duration];
+    #endif
   }
 }
 
@@ -1834,11 +1836,15 @@ static flutter::PointerData::DeviceKind DeviceKindFromTouchType(UITouch* touch) 
 }
 
 + (BOOL)accessibilityIsOnOffSwitchLabelsEnabled {
-  if (@available(iOS 13, *)) {
-    return UIAccessibilityIsOnOffSwitchLabelsEnabled();
-  } else {
-    return NO;
-  }
+	#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)      	
+  if (@available(iOS 13, *)) {	
+    return UIAccessibilityIsOnOffSwitchLabelsEnabled();	
+  } else {	
+    return NO;	
+  }	
+#else	
+    return NO;	
+#endif   
 }
 
 #pragma mark - Set user settings

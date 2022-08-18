@@ -2177,6 +2177,7 @@ return false;
 
 - (void)setEditableSizeAndTransform:(NSDictionary*)dictionary {
   [_activeView setEditableTransform:dictionary[@"transform"]];
+  #if !(defined(TARGET_OS_TV) && TARGET_OS_TV) 
   if ([_activeView isScribbleAvailable]) {
     // This is necessary to set up where the scribble interactable element will be.
     int leftIndex = 12;
@@ -2189,6 +2190,7 @@ return false;
         CGRectMake(0, 0, [dictionary[@"width"] intValue], [dictionary[@"height"] intValue]);
     _activeView.tintColor = [UIColor clearColor];
   }
+  #endif 
 }
 
 - (void)updateMarkedRect:(NSDictionary*)dictionary {
