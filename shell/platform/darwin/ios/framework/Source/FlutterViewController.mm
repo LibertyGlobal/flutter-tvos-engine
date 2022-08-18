@@ -393,6 +393,12 @@ typedef struct MouseState {
                  name:UIAccessibilityDarkerSystemColorsStatusDidChangeNotification
                object:nil];
 
+  [center addObserver:self
+             selector:@selector(onUserSettingsChanged:)
+                 name:UIContentSizeCategoryDidChangeNotification
+               object:nil];
+
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   if (@available(iOS 13.0, *)) {
     [center addObserver:self
                selector:@selector(onAccessibilityStatusChanged:)
@@ -400,12 +406,6 @@ typedef struct MouseState {
                  object:nil];
   }
 
-  [center addObserver:self
-             selector:@selector(onUserSettingsChanged:)
-                 name:UIContentSizeCategoryDidChangeNotification
-               object:nil];
-
-#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   [center addObserver:self
              selector:@selector(onHideHomeIndicatorNotification:)
                  name:FlutterViewControllerHideHomeIndicator
@@ -1586,51 +1586,11 @@ static flutter::PointerData::DeviceKind DeviceKindFromTouchType(UITouch* touch) 
 }
 
 - (void)keyboardWillChangeFrame:(NSNotification*)notification {
-<<<<<<< HEAD
   // Immediately prior to a change in keyboard frame, this notification is triggered.
   // Sometimes when the keyboard is being hidden or undocked, this notification's keyboard's end
   // frame is not yet entirely out of screen, which is why we also use
   // UIKeyboardWillHideNotification.
   [self handleKeyboardNotification:notification];
-=======
-#ifdef TARGET_OS_TV
-  CGRect keyboardFrame = CGRectMake(0.0, 0.0, self.view.bounds.size.width, 100.0);
-#else
-  NSDictionary* info = [notification userInfo];
-
-  // Ignore keyboard notifications related to other apps.
-  id isLocal = info[UIKeyboardIsLocalUserInfoKey];
-  if (isLocal && ![isLocal boolValue]) {
-    return;
-  }
-
-  // Ignore keyboard notifications if engine’s viewController is not current viewController.
-  if ([_engine.get() viewController] != self) {
-    return;
-  }
-
-  CGRect keyboardFrame = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-#endif
-  CGRect screenRect = [[UIScreen mainScreen] bounds];
-
-  // Get the animation duration
-  
-  NSTimeInterval duration = 0;
-
-  // Considering the iPad's split keyboard, Flutter needs to check if the keyboard frame is present
-  // in the screen to see if the keyboard is visible.
-  if (CGRectIntersectsRect(keyboardFrame, screenRect)) {
-    CGFloat bottom = CGRectGetHeight(keyboardFrame);
-    CGFloat scale = [UIScreen mainScreen].scale;
-    // The keyboard is treated as an inset since we want to effectively reduce the window size by
-    // the keyboard height. The Dart side will compute a value accounting for the keyboard-consuming
-    // bottom padding.
-    self.targetViewInsetBottom = bottom * scale;
-  } else {
-    self.targetViewInsetBottom = 0;
-  }
-  [self startKeyBoardAnimation:duration];
->>>>>>> fd47ca52e7 (FLUXUI-2707 cherry picked old changes and updated DEPS)
 }
 
 - (void)keyboardWillBeHidden:(NSNotification*)notification {
@@ -2223,11 +2183,15 @@ static flutter::PointerData::DeviceKind DeviceKindFromTouchType(UITouch* touch) 
 }
 
 + (BOOL)accessibilityIsOnOffSwitchLabelsEnabled {
-  if (@available(iOS 13, *)) {
-    return UIAccessibilityIsOnOffSwitchLabelsEnabled();
-  } else {
-    return NO;
-  }
+	#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)      	
+  if (@available(iOS 13, *)) {	
+    return UIAccessibilityIsOnOffSwitchLabelsEnabled();	
+  } else {	
+    return NO;	
+  }	
+#else	
+    return NO;	
+#endif   
 }
 
 #pragma mark - Set user settings

@@ -157,8 +157,9 @@ FLUTTER_DARWIN_EXPORT
 @property(nonatomic) FlutterScribbleFocusStatus scribbleFocusStatus;
 @property(nonatomic, strong) NSArray<FlutterTextSelectionRect*>* selectionRects;
 - (void)resetScribbleInteractionStatusIfEnding;
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 - (BOOL)isScribbleAvailable;
-
+#endif
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
