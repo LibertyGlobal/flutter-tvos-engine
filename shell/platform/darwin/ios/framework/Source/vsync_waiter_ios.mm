@@ -102,7 +102,10 @@ fml::scoped_nsobject<VSyncClient> VsyncWaiterIOS::GetVsyncClient() const {
   if (!DisplayLinkManager.maxRefreshRateEnabledOnIPhone) {
     return;
   }
+
   double maxFrameRate = fmax(refreshRate, 60);
+  #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
+  
   double minFrameRate = fmax(maxFrameRate / 2, 60);
 
   if (@available(iOS 15.0, tvOS 15.0, *)) {
@@ -111,6 +114,9 @@ fml::scoped_nsobject<VSyncClient> VsyncWaiterIOS::GetVsyncClient() const {
   } else {
     display_link_.get().preferredFramesPerSecond = maxFrameRate;
   }
+  #else
+    display_link_.get().preferredFramesPerSecond = maxFrameRate;
+  #endif
 }
 
 - (void)await {
