@@ -393,6 +393,12 @@ typedef struct MouseState {
                  name:UIAccessibilityDarkerSystemColorsStatusDidChangeNotification
                object:nil];
 
+  [center addObserver:self
+             selector:@selector(onUserSettingsChanged:)
+                 name:UIContentSizeCategoryDidChangeNotification
+               object:nil];
+
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   if (@available(iOS 13.0, *)) {
     [center addObserver:self
                selector:@selector(onAccessibilityStatusChanged:)
@@ -400,12 +406,6 @@ typedef struct MouseState {
                  object:nil];
   }
 
-  [center addObserver:self
-             selector:@selector(onUserSettingsChanged:)
-                 name:UIContentSizeCategoryDidChangeNotification
-               object:nil];
-
-#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   [center addObserver:self
              selector:@selector(onHideHomeIndicatorNotification:)
                  name:FlutterViewControllerHideHomeIndicator
@@ -1643,10 +1643,32 @@ static flutter::PointerData::DeviceKind DeviceKindFromTouchType(UITouch* touch) 
 }
 
 - (void)keyboardWillBeHidden:(NSNotification*)notification {
-  // When keyboard is hidden or undocked, this notification will be triggered.
-  // This notification might not occur when the keyboard is changed from docked to floating, which
-  // is why we also use UIKeyboardWillChangeFrameNotification.
-  [self handleKeyboardNotification:notification];
+     #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
+  NSDictionary* info = [notification userInfo];
+
+  if (@available(iOS 9, *)) {
+    // Ignore keyboard notifications related to other apps.
+    id isLocal = info[UIKeyboardIsLocalUserInfoKey];
+    if (isLocal && ![isLocal boolValue]) {
+      return;
+    }
+  }
+
+  // Ignore keyboard notifications if engine’s viewController is not current viewController.
+  if ([_engine.get() viewController] != self) {
+    return;
+  }
+
+  if (self.targetViewInsetBottom != 0) {
+    // Ensure the keyboard will be dismissed. Just like the keyboardWillChangeFrame,
+    // keyboardWillBeHidden is also in an animation block in iOS sdk, so we don't need to set the
+    // animation curve. Related issue: https://github.com/flutter/flutter/issues/99951
+    self.targetViewInsetBottom = 0;
+    NSTimeInterval duration =
+        [[info objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    [self startKeyBoardAnimation:duration];
+    #endif
+  }
 }
 
 - (void)handleKeyboardNotification:(NSNotification*)notification {
@@ -2229,11 +2251,15 @@ static flutter::PointerData::DeviceKind DeviceKindFromTouchType(UITouch* touch) 
 }
 
 + (BOOL)accessibilityIsOnOffSwitchLabelsEnabled {
-  if (@available(iOS 13, *)) {
-    return UIAccessibilityIsOnOffSwitchLabelsEnabled();
-  } else {
-    return NO;
-  }
+	#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)      	
+  if (@available(iOS 13, *)) {	
+    return UIAccessibilityIsOnOffSwitchLabelsEnabled();	
+  } else {	
+    return NO;	
+  }	
+#else	
+    return NO;	
+#endif   
 }
 
 #pragma mark - Set user settings
