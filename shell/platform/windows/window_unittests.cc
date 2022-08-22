@@ -378,5 +378,81 @@ TEST(MockWindow, DISABLED_GetObjectUia) {
   EXPECT_TRUE(uia_called);
 }
 
+// Verify direct manipulation isn't notified of pointer hit tests.
+TEST(MockWin32Window, PointerHitTest) {
+  UINT32 pointer_id = 123;
+  auto windows_proc_table = std::make_unique<MockWindowsProcTable>();
+  auto text_input_manager = std::make_unique<MockTextInputManagerWin32>();
+
+  EXPECT_CALL(*windows_proc_table, GetPointerType(Eq(pointer_id), _))
+      .Times(1)
+      .WillOnce([](UINT32 pointer_id, POINTER_INPUT_TYPE* type) {
+        *type = PT_POINTER;
+        return TRUE;
+      });
+
+  MockWin32Window window(std::move(windows_proc_table),
+                         std::move(text_input_manager));
+
+  auto direct_manipulation =
+      std::make_unique<MockDirectManipulationOwner>(&window);
+
+  EXPECT_CALL(*direct_manipulation, SetContact).Times(0);
+
+  window.SetDirectManipulationOwner(std::move(direct_manipulation));
+  window.InjectWindowMessage(DM_POINTERHITTEST, MAKEWPARAM(pointer_id, 0), 0);
+}
+
+// Verify direct manipulation is notified of touchpad hit tests.
+TEST(MockWin32Window, TouchPadHitTest) {
+  UINT32 pointer_id = 123;
+  auto windows_proc_table = std::make_unique<MockWindowsProcTable>();
+  auto text_input_manager = std::make_unique<MockTextInputManagerWin32>();
+
+  EXPECT_CALL(*windows_proc_table, GetPointerType(Eq(pointer_id), _))
+      .Times(1)
+      .WillOnce([](UINT32 pointer_id, POINTER_INPUT_TYPE* type) {
+        *type = PT_TOUCHPAD;
+        return TRUE;
+      });
+
+  MockWin32Window window(std::move(windows_proc_table),
+                         std::move(text_input_manager));
+
+  auto direct_manipulation =
+      std::make_unique<MockDirectManipulationOwner>(&window);
+
+  EXPECT_CALL(*direct_manipulation, SetContact(Eq(pointer_id))).Times(1);
+
+  window.SetDirectManipulationOwner(std::move(direct_manipulation));
+  window.InjectWindowMessage(DM_POINTERHITTEST, MAKEWPARAM(pointer_id, 0), 0);
+}
+
+// Verify direct manipulation isn't notified of unknown hit tests.
+// This can happen if determining the pointer type fails, for example,
+// if GetPointerType is unsupported by the current Windows version.
+// See: https://github.com/flutter/flutter/issues/109412
+TEST(MockWin32Window, UnknownPointerTypeSkipsDirectManipulation) {
+  UINT32 pointer_id = 123;
+  auto windows_proc_table = std::make_unique<MockWindowsProcTable>();
+  auto text_input_manager = std::make_unique<MockTextInputManagerWin32>();
+
+  EXPECT_CALL(*windows_proc_table, GetPointerType(Eq(pointer_id), _))
+      .Times(1)
+      .WillOnce(
+          [](UINT32 pointer_id, POINTER_INPUT_TYPE* type) { return FALSE; });
+
+  MockWin32Window window(std::move(windows_proc_table),
+                         std::move(text_input_manager));
+
+  auto direct_manipulation =
+      std::make_unique<MockDirectManipulationOwner>(&window);
+
+  EXPECT_CALL(*direct_manipulation, SetContact).Times(0);
+
+  window.SetDirectManipulationOwner(std::move(direct_manipulation));
+  window.InjectWindowMessage(DM_POINTERHITTEST, MAKEWPARAM(pointer_id, 0), 0);
+}
+
 }  // namespace testing
 }  // namespace flutter
