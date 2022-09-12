@@ -1562,8 +1562,8 @@ static flutter::PointerData::DeviceKind DeviceKindFromTouchType(UITouch* touch) 
     NSTimeInterval duration =
         [[info objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     [self startKeyBoardAnimation:duration];
-    #endif
   }
+  #endif
 }
 
 - (void)startKeyBoardAnimation:(NSTimeInterval)duration {
