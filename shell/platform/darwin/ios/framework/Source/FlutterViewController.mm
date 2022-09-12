@@ -852,6 +852,35 @@ MPRemoteCommandCenter *commandCenter = [MPRemoteCommandCenter sharedCommandCente
     }
     return MPRemoteCommandHandlerStatusSuccess;
 }];
+
+[commandCenter.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
+      [self sendTap:0x7E withType:@"android" ofType:@"keydown"];
+      [self sendTap:0x7E withType:@"android" ofType:@"keyup"];
+    return MPRemoteCommandHandlerStatusSuccess;
+}
+];
+
+[commandCenter.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
+    [self sendTap:0x7F withType:@"android" ofType:@"keydown"];
+    [self sendTap:0x7F withType:@"android" ofType:@"keyup"];
+    return MPRemoteCommandHandlerStatusSuccess;
+}
+];
+
+[commandCenter.stopCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
+    [self sendTap:0x56 withType:@"android" ofType:@"keydown"];
+    [self sendTap:0x56 withType:@"android" ofType:@"keyup"];
+    return MPRemoteCommandHandlerStatusSuccess;
+}
+];
+
+[commandCenter.togglePlayPauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
+    [self sendTap:0x55 withType:@"android" ofType:@"keydown"];
+    [self sendTap:0x55 withType:@"android" ofType:@"keyup"];
+    return MPRemoteCommandHandlerStatusSuccess;
+}
+];
+
 }
 
 - (void)controllerConnected:(NSNotification*)notification {
