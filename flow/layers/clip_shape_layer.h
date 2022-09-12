@@ -8,6 +8,7 @@
 #include "flutter/flow/layers/cacheable_layer.h"
 #include "flutter/flow/layers/container_layer.h"
 #include "flutter/flow/paint_utils.h"
+#include "flutter/flow/raster_cache_util.h"
 
 namespace flutter {
 
