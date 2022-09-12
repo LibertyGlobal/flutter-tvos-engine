@@ -846,6 +846,18 @@ MPRemoteCommandCenter *commandCenter = [MPRemoteCommandCenter sharedCommandCente
 }
 ];
 
+[commandCenter.changePlaybackRateCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
+    if (((MPChangePlaybackRateCommandEvent *)event).playbackRate > 0){
+      [self sendTap:0x5A withType:@"android" ofType:@"keydown"];
+      [self sendTap:0x5A withType:@"android" ofType:@"keyup"];
+    } else if (((MPChangePlaybackRateCommandEvent *)event).playbackRate < 0){
+      [self sendTap:0x59 withType:@"android" ofType:@"keydown"];
+      [self sendTap:0x59 withType:@"android" ofType:@"keyup"];
+    }
+    return MPRemoteCommandHandlerStatusSuccess;
+}
+];
+
 }
 
 - (void)controllerConnected:(NSNotification*)notification {
