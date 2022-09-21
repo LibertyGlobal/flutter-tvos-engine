@@ -176,10 +176,13 @@ group("unittests") {
       public_deps += [ "//flutter/shell/platform/fuchsia:tests" ]
     }
 
+<<<<<<< HEAD
     if (is_mac || is_linux || is_win) {
       public_deps += [ "//flutter/impeller:impeller_unittests" ]
     }
 
+=======
+>>>>>>> dd5dce9d6f (update to 3.3.1)
     if (is_mac) {
       public_deps += [
         "//flutter/impeller/golden_tests:impeller_golden_tests",
