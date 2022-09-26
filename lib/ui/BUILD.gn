@@ -4,6 +4,7 @@
 
 import("//build/fuchsia/sdk.gni")
 import("//flutter/common/config.gni")
+import("//flutter/impeller/tools/impeller.gni")
 import("//flutter/testing/testing.gni")
 
 source_set("ui") {
@@ -154,6 +155,15 @@ source_set("ui") {
     "//third_party/rapidjson",
     "//third_party/skia",
   ]
+
+  if (impeller_supports_rendering) {
+    sources += [
+      "painting/image_decoder_impeller.cc",
+      "painting/image_decoder_impeller.h",
+    ]
+
+    deps += [ "//flutter/impeller" ]
+  }
 
   if (!defined(defines)) {
     defines = []
