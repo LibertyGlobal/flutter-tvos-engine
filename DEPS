@@ -244,9 +244,6 @@ deps = {
   #'src': 'https://github.com/flutter/buildroot.git' + '@' + 'f24f62fa5381c0e415b6ca2000600fc0600c11c8',
   'src': Var('upc_git') + '/flutter-buildroot.git' + '@' + Var('upc_revision'),
 
-  'src/flutter/impeller':
-   Var('github_git') + '/flutter/impeller' + '@' + '2adc41bb87acffab0bca6bcdb9bc8da330068cc9',
-
    # Fuchsia compatibility
    #
    # The dependencies in this section should match the layout in the Fuchsia gn
