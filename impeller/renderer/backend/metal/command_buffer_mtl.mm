@@ -10,6 +10,8 @@
 
 namespace impeller {
 
+// NOLINTEND(readability-identifier-naming)
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 API_AVAILABLE(ios(14.0), macos(11.0))
 static NSString* MTLCommandEncoderErrorStateToString(
     MTLCommandEncoderErrorState state) {
@@ -27,6 +29,18 @@ static NSString* MTLCommandEncoderErrorStateToString(
   }
   return @"unknown";
 }
+#endif
+// NOLINTBEGIN(readability-identifier-naming)
+
+// TODO(dnfield): This can be removed when all bots have been sufficiently
+// upgraded for MAC_OS_VERSION_12_0.
+#if !defined(MAC_OS_VERSION_12_0) || \
+    MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_VERSION_12_0
+constexpr int MTLCommandBufferErrorAccessRevoked = 4;
+constexpr int MTLCommandBufferErrorStackOverflow = 12;
+#endif
+
+// NOLINTEND(readability-identifier-naming)
 
 static NSString* MTLCommandBufferErrorToString(MTLCommandBufferError code) {
   switch (code) {
@@ -80,7 +94,7 @@ static bool LogMTLCommandBufferErrorIfPresent(id<MTLCommandBuffer> buffer) {
                   .UTF8String
            << std::endl;
   }
-
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   if (@available(iOS 14.0, macOS 11.0, *)) {
     NSArray<id<MTLCommandBufferEncoderInfo>>* infos =
         buffer.error.userInfo[MTLCommandBufferEncoderInfoErrorKey];
@@ -104,14 +118,14 @@ static bool LogMTLCommandBufferErrorIfPresent(id<MTLCommandBuffer> buffer) {
       }
     }
   }
-
+#endif
   stream << "<<<<<<<";
   VALIDATION_LOG << stream.str();
   return false;
 }
 
 static id<MTLCommandBuffer> CreateCommandBuffer(id<MTLCommandQueue> queue) {
-#ifndef FLUTTER_RELEASE
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV &&) && !defined(FLUTTER_RELEASE)
   if (@available(iOS 14.0, macOS 11.0, *)) {
     auto desc = [[MTLCommandBufferDescriptor alloc] init];
     // Degrades CPU performance slightly but is well worth the cost for typical
@@ -119,7 +133,7 @@ static id<MTLCommandBuffer> CreateCommandBuffer(id<MTLCommandQueue> queue) {
     desc.errorOptions = MTLCommandBufferErrorOptionEncoderExecutionStatus;
     return [queue commandBufferWithDescriptor:desc];
   }
-#endif  // FLUTTER_RELEASE
+#endif
   return [queue commandBuffer];
 }
 
