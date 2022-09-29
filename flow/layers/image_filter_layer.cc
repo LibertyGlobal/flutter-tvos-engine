@@ -55,6 +55,7 @@ void ImageFilterLayer::Preroll(PrerollContext* context) {
 
   Layer::AutoPrerollSaveLayerState save =
       Layer::AutoPrerollSaveLayerState::Create(context);
+  SkMatrix child_matrix = matrix;
 
   AutoCache cache = AutoCache(layer_raster_cache_item_.get(), context,
                               context->state_stack.transform_3x3());
