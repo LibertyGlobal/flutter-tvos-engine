@@ -9,7 +9,7 @@
 
 vars = {
   'upc_git': 'ssh://git@bitbucket.upc.biz:7999/pers',
-  'upc_revision': '3.3.4',
+  'upc_revision': '3.3.7',
   'chromium_git': 'https://chromium.googlesource.com',
   'swiftshader_git': 'https://swiftshader.googlesource.com',
   'dart_git': 'https://dart.googlesource.com',
@@ -549,7 +549,7 @@ deps = {
       }
     ],
     'dep_type': 'cipd',
-    'condition': 'host_os == "win" and download_dart_sdk'
+    'condition': 'host_os == "win" and download_dart_sdk and not release_candidate'
   },
 
   'src/third_party/colorama/src':
