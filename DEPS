@@ -239,7 +239,8 @@ allowed_hosts = [
 ]
 
 deps = {
-  'src': Var('upc_git') + '/flutter-buildroot.git' + '@' + Var('upc_revision'),
+  #'src': 'https://github.com/flutter/buildroot.git' + '@' + '6af51ff4b86270cc61517bff3fff5c3bb11492e1',
+  'src': Var('upc_git') + '/flutter-tvos-buildroot.git' + '@' + Var('upc_revision'),
 
    # Fuchsia compatibility
    #
@@ -297,7 +298,7 @@ deps = {
 
   'src/third_party/dart':
   # Var('dart_git') + '/sdk.git' + '@' + Var('dart_revision'),
-  Var('upc_git') + '/flutter-dart.git' + '@' + Var('dart_revision'),
+  Var('upc_git') + '/flutter-tvos-dart.git' + '@' + Var('dart_revision'),
 
   # WARNING: Unused Dart dependencies in the list below till "WARNING:" marker are removed automatically - see create_updated_flutter_deps.py.
 
@@ -550,7 +551,7 @@ deps = {
 
   'src/third_party/skia':
   # Var('skia_git') + '/skia.git' + '@' +  Var('skia_revision'),
-  Var('upc_git') + '/flutter-skia.git' + '@' + Var('upc_revision'),
+  Var('upc_git') + '/flutter-tvos-skia.git' + '@' + Var('upc_revision'),
 
   'src/third_party/ocmock':
    Var('ocmock_git') + '@' +  Var('ocmock_rev'),
