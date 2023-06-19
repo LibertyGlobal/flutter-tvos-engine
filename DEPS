@@ -8,8 +8,8 @@
 # to list the dependency's destination directory.
 
 vars = {
-  'upc_git': 'https://github.com/LibertyGlobal',
-  'upc_revision': '3.3.10',
+  'upc_git': 'https://github.com/denisovav',
+  'upc_revision': '3.7.12',
   'chromium_git': 'https://chromium.googlesource.com',
   'swiftshader_git': 'https://swiftshader.googlesource.com',
   'dart_git': 'https://dart.googlesource.com',
