@@ -20,7 +20,7 @@ static bool DeviceSupportsMemorylessTargets(id<MTLDevice> device) {
   if (@available(ios 13.0, tvos 13.0, macos 10.15, *)) {
     return [device supportsFamily:MTLGPUFamilyApple2];
   } else {
-#if FML_OS_IOS
+#if FML_OS_IOS && !(defined(TARGET_OS_TV) && TARGET_OS_TV)
     // This is perhaps redundant. But, just in case we somehow get into a case
     // where Impeller runs on iOS versions less than 8.0 and/or without A8
     // GPUs, we explicitly check feature set support.
@@ -65,7 +65,7 @@ static ISize DeviceMaxTextureSizeSupported(id<MTLDevice> device) {
     }
     return {8192, 8192};
   } else {
-#if FML_OS_IOS
+#if FML_OS_IOS && !(defined(TARGET_OS_TV) && TARGET_OS_TV)
     if ([device supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily4_v1] ||
         [device supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily3_v1]) {
       return {16384, 16384};
