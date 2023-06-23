@@ -82,14 +82,11 @@ static NSString* const kRestorationStateAppModificationKey = @"mod-date";
 }
 
 #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 - (void)application:(UIApplication*)application
     didRegisterUserNotificationSettings:(UIUserNotificationSettings*)notificationSettings {
   [_lifeCycleDelegate application:application
       didRegisterUserNotificationSettings:notificationSettings];
 }
-#pragma GCC diagnostic pop
 #endif
 
 - (void)application:(UIApplication*)application
@@ -105,13 +102,10 @@ static NSString* const kRestorationStateAppModificationKey = @"mod-date";
 }
 
 #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 - (void)application:(UIApplication*)application
     didReceiveLocalNotification:(UILocalNotification*)notification {
   [_lifeCycleDelegate application:application didReceiveLocalNotification:notification];
 }
-#pragma GCC diagnostic pop
 #endif
 
 - (void)userNotificationCenter:(UNUserNotificationCenter*)center

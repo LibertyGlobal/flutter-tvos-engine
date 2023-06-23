@@ -916,9 +916,6 @@ MPRemoteCommandCenter *commandCenter = [MPRemoteCommandCenter sharedCommandCente
   [self createRecognizerFor:UIPressTypePlayPause action:@selector(handlePlayPauseTap:)];
   [self createRecognizerFor:UIPressTypeMenu action:@selector(handleMenuTap:)];
 
-  #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wunguarded-availability-new"
-
   if ([self respondsToSelector:@selector(handlePageUpTap:)]) {
     [self createRecognizerFor:UIPressTypePageUp action:@selector(handlePageUpTap:)];
   }
@@ -926,8 +923,6 @@ MPRemoteCommandCenter *commandCenter = [MPRemoteCommandCenter sharedCommandCente
   if ([self respondsToSelector:@selector(handlePageDownTap:)]) {
     [self createRecognizerFor:UIPressTypePageDown action:@selector(handlePageDownTap:)];
   }
-
-  #pragma clang diagnostic pop  
 
   [self setupControllers];
   [self setupWalnutController];
@@ -1374,10 +1369,10 @@ static flutter::PointerData::DeviceKind DeviceKindFromTouchType(UITouch* touch) 
       // Discussion:
       // Sweep direction is the same. Phase of M_PI_2.
       pointer_data.orientation = [touch azimuthAngleInView:nil] - M_PI_2;
-    }
+    
     #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
     if (@available(iOS 13.4, *)) {
-      if (event != nullptr) {
+        if (event != nullptr) {
         pointer_data.buttons = (((event.buttonMask & UIEventButtonMaskPrimary) > 0)
                                     ? flutter::PointerButtonMouse::kPointerButtonMousePrimary
                                     : 0) |

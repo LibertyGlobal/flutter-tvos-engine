@@ -9,8 +9,7 @@
 #include "impeller/renderer/backend/metal/render_pass_mtl.h"
 
 namespace impeller {
-#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)  
-API_AVAILABLE(ios(14.0), macos(11.0))
+API_AVAILABLE(ios(14.0), tvos(14.0), macos(11.0))
 static NSString* MTLCommandEncoderErrorStateToString(
     MTLCommandEncoderErrorState state) {
   switch (state) {
@@ -27,7 +26,6 @@ static NSString* MTLCommandEncoderErrorStateToString(
   }
   return @"unknown";
 }
-#endif
 
 static NSString* MTLCommandBufferErrorToString(MTLCommandBufferError code) {
   switch (code) {
@@ -81,8 +79,7 @@ static bool LogMTLCommandBufferErrorIfPresent(id<MTLCommandBuffer> buffer) {
                   .UTF8String
            << std::endl;
   }
-#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
-  if (@available(iOS 14.0, macOS 11.0, *)) {
+  if (@available(iOS 14.0, tvos 14.0, macOS 11.0, *)) {
     NSArray<id<MTLCommandBufferEncoderInfo>>* infos =
         buffer.error.userInfo[MTLCommandBufferEncoderInfoErrorKey];
     for (id<MTLCommandBufferEncoderInfo> info in infos) {
@@ -105,7 +102,6 @@ static bool LogMTLCommandBufferErrorIfPresent(id<MTLCommandBuffer> buffer) {
       }
     }
   }
-#endif
   stream << "<<<<<<<";
   VALIDATION_LOG << stream.str();
   return false;
