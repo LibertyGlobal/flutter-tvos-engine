@@ -405,12 +405,11 @@ static BOOL IsFieldPasswordRelated(NSDictionary* configuration) {
       [contentType isEqualToString:UITextContentTypeUsername]) {
     return YES;
   }
-
-  if (@available(iOS 12.0, *)) {
-    if ([contentType isEqualToString:UITextContentTypeNewPassword]) {
+  
+  if ([contentType isEqualToString:UITextContentTypeNewPassword]) {
       return YES;
-    }
   }
+
   return NO;
 }
 
@@ -2192,12 +2191,14 @@ return false;
 }
 
 - (void)startLiveTextInput {
-  if (@available(iOS 15.0, *)) {
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
+  if (@available(iOS 15.0, tvOS 15.0, *)) {
     if (_activeView == nil || !_activeView.isFirstResponder) {
       return;
     }
     [_activeView captureTextFromCamera:nil];
   }
+#endif
 }
 
 - (void)showTextInput {

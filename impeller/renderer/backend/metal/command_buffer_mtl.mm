@@ -30,15 +30,6 @@ static NSString* MTLCommandEncoderErrorStateToString(
   return @"unknown";
 }
 #endif
-// NOLINTBEGIN(readability-identifier-naming)
-
-// TODO(dnfield): This can be removed when all bots have been sufficiently
-// upgraded for MAC_OS_VERSION_12_0.
-#if !defined(MAC_OS_VERSION_12_0) || \
-    MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_VERSION_12_0
-constexpr int MTLCommandBufferErrorAccessRevoked = 4;
-constexpr int MTLCommandBufferErrorStackOverflow = 12;
-#endif
 
 // NOLINTEND(readability-identifier-naming)
 
@@ -125,7 +116,7 @@ static bool LogMTLCommandBufferErrorIfPresent(id<MTLCommandBuffer> buffer) {
 }
 
 static id<MTLCommandBuffer> CreateCommandBuffer(id<MTLCommandQueue> queue) {
-#if !(defined(TARGET_OS_TV) && TARGET_OS_TV &&) && !defined(FLUTTER_RELEASE)
+#if !defined(FLUTTER_RELEASE) && !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   if (@available(iOS 14.0, macOS 11.0, *)) {
     auto desc = [[MTLCommandBufferDescriptor alloc] init];
     // Degrades CPU performance slightly but is well worth the cost for typical
@@ -133,7 +124,7 @@ static id<MTLCommandBuffer> CreateCommandBuffer(id<MTLCommandQueue> queue) {
     desc.errorOptions = MTLCommandBufferErrorOptionEncoderExecutionStatus;
     return [queue commandBufferWithDescriptor:desc];
   }
-#endif
+#endif  // FLUTTER_RELEASE
   return [queue commandBuffer];
 }
 

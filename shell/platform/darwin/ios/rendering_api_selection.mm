@@ -67,11 +67,6 @@ Class GetCoreAnimationLayerClassForRenderingAPI(IOSRenderingAPI rendering_api) {
   switch (rendering_api) {
     case IOSRenderingAPI::kSoftware:
       return [CALayer class];
-    case IOSRenderingAPI::kOpenGLES:
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-      return [CAEAGLLayer class];
-#pragma GCC diagnostic pop
     case IOSRenderingAPI::kMetal:
       if (@available(iOS METAL_IOS_VERSION_BASELINE, *)) {
 

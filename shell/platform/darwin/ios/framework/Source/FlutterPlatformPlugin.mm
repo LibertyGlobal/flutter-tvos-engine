@@ -114,19 +114,17 @@ using namespace flutter;
   }
 
 #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
-  if (@available(iOS 10, *)) {
-    if ([@"HapticFeedbackType.lightImpact" isEqualToString:feedbackType]) {
-      [[[[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleLight] autorelease]
+  if ([@"HapticFeedbackType.lightImpact" isEqualToString:feedbackType]) {
+    [[[[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleLight] autorelease]
           impactOccurred];
-    } else if ([@"HapticFeedbackType.mediumImpact" isEqualToString:feedbackType]) {
-      [[[[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleMedium] autorelease]
+  } else if ([@"HapticFeedbackType.mediumImpact" isEqualToString:feedbackType]) {
+    [[[[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleMedium] autorelease]
           impactOccurred];
-    } else if ([@"HapticFeedbackType.heavyImpact" isEqualToString:feedbackType]) {
-      [[[[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleHeavy] autorelease]
+  } else if ([@"HapticFeedbackType.heavyImpact" isEqualToString:feedbackType]) {
+    [[[[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleHeavy] autorelease]
           impactOccurred];
-    } else if ([@"HapticFeedbackType.selectionClick" isEqualToString:feedbackType]) {
-      [[[[UISelectionFeedbackGenerator alloc] init] autorelease] selectionChanged];
-    }
+  } else if ([@"HapticFeedbackType.selectionClick" isEqualToString:feedbackType]) {
+    [[[[UISelectionFeedbackGenerator alloc] init] autorelease] selectionChanged];
   }
 #endif
 }
@@ -296,15 +294,9 @@ using namespace flutter;
 }
 
 - (NSDictionary*)clipboardHasStrings {
-   bool hasStrings = false;
+  bool hasStrings = false;
 #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
-  UIPasteboard* pasteboard = [UIPasteboard generalPasteboard];
-  if (@available(iOS 10, *)) {
-    hasStrings = pasteboard.hasStrings;
-  } else {
-    NSString* stringInPasteboard = pasteboard.string;
-    hasStrings = stringInPasteboard != nil;
-  }
+    hasStrings = [UIPasteboard generalPasteboard].hasStrings;
 #endif
   return @{@"value" : @(hasStrings)};
 }

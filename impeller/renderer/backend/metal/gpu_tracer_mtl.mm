@@ -21,6 +21,7 @@ bool GPUTracerMTL::StartCapturingFrame(GPUTracerConfiguration configuration) {
     return false;
   }
 
+  #if !(defined(TARGET_OS_TV) || TARGET_OS_TV)
   if (@available(iOS 13.0, macOS 10.15, *)) {
     MTLCaptureDescriptor* desc = [[MTLCaptureDescriptor alloc] init];
     desc.captureObject = device_;
@@ -43,6 +44,7 @@ bool GPUTracerMTL::StartCapturingFrame(GPUTracerConfiguration configuration) {
     }
     return [captureManager startCaptureWithDescriptor:desc error:nil];
   }
+  #endif
 
   [captureManager startCaptureWithDevice:device_];
   return captureManager.isCapturing;

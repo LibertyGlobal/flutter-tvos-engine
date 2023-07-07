@@ -34,6 +34,10 @@ class Picture : public RefCountedDartWrappable<Picture> {
                       uint32_t height,
                       Dart_Handle raw_image_callback);
 
+  void toImageSync(uint32_t width,
+                   uint32_t height,
+                   Dart_Handle raw_image_handle);
+
   void dispose();
 
   size_t GetAllocationSize() const;

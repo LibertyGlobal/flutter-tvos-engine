@@ -40,10 +40,11 @@ std::shared_ptr<Texture> DeviceBufferMTL::AsTexture(
     return nullptr;
   }
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   if (@available(iOS 13.0, macos 10.15, *)) {
     mtl_texture_desc.resourceOptions = buffer_.resourceOptions;
   }
-
+#endif
   auto texture = [buffer_ newTextureWithDescriptor:mtl_texture_desc
                                             offset:0
                                        bytesPerRow:row_bytes];

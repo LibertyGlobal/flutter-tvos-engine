@@ -95,7 +95,6 @@ bool DisplayListLayer::Compare(DiffContext::Statistics& statistics,
 
 void DisplayListLayer::Preroll(PrerollContext* context) {
   DisplayList* disp_list = display_list();
-  SkMatrix child_matrix = matrix;
 
   AutoCache cache = AutoCache(display_list_raster_cache_item_.get(), context,
                               context->state_stack.transform_3x3());
