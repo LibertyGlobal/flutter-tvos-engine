@@ -50,7 +50,7 @@ vars = {
   # Dart is: https://github.com/dart-lang/sdk/blob/main/DEPS
   # You can use //tools/dart/create_updated_flutter_deps.py to produce
   # updated revision list of existing dependencies.
-  'dart_revision': '01230867b4ae5c4f33335e6c0fb5126a35b7f576',
+  'dart_revision': 'f352160cf34becd2afdc691f2af03ac67fe36a6e',
   'dart_revision_origin': '9830d0d6cb3f9988ad9056a84d55a73cd8299e87',
 
   # WARNING: DO NOT EDIT MANUALLY
@@ -298,7 +298,7 @@ deps = {
 
   'src/third_party/dart':
   # Var('dart_git') + '/sdk.git' + '@' + Var('dart_revision'),
-  Var('upc_git') + '/flutter-tvos-dart.git' + '@' + Var('upc_revision'),
+  Var('upc_git') + '/flutter-tvos-dart.git' + '@' + Var('dart_revision'),
 
   # WARNING: Unused Dart dependencies in the list below till "WARNING:" marker are removed automatically - see create_updated_flutter_deps.py.
 
