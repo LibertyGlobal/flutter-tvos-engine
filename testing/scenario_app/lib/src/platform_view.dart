@@ -22,7 +22,8 @@ List<int> _to64(num value) {
   final Uint8List temp = Uint8List(15);
   if (value is double) {
     temp.buffer.asByteData().setFloat64(7, value, Endian.little);
-  } else if (value is int) {  // ignore: avoid_double_and_int_checks
+  } else if (value is int) {
+    // ignore: avoid_double_and_int_checks
     temp.buffer.asByteData().setInt64(7, value, Endian.little);
   }
   return temp;
@@ -111,7 +112,6 @@ class PlatformViewNoOverlayIntersectionScenario extends Scenario
     );
   }
 }
-
 
 /// A platform view that is larger than the display size.
 /// This is only applicable on Android while using virtual displays.
@@ -526,7 +526,8 @@ class MultiPlatformViewBackgroundForegroundScenario extends Scenario
 }
 
 /// Platform view with clip rect.
-class PlatformViewClipRectScenario extends Scenario with _BasePlatformViewScenarioMixin {
+class PlatformViewClipRectScenario extends Scenario
+    with _BasePlatformViewScenarioMixin {
   /// Constructs a platform view with clip rect scenario.
   PlatformViewClipRectScenario(
     super.view, {
@@ -554,7 +555,8 @@ class PlatformViewClipRectScenario extends Scenario with _BasePlatformViewScenar
 /// Platform view with clip rect then the PlatformView is moved for 10 frames.
 ///
 /// The clip rect moves with the same transform matrix with the PlatformView.
-class PlatformViewClipRectAfterMovedScenario extends Scenario with _BasePlatformViewScenarioMixin {
+class PlatformViewClipRectAfterMovedScenario extends Scenario
+    with _BasePlatformViewScenarioMixin {
   /// Constructs a platform view with clip rect scenario.
   PlatformViewClipRectAfterMovedScenario(
     super.view, {
@@ -576,7 +578,7 @@ class PlatformViewClipRectAfterMovedScenario extends Scenario with _BasePlatform
       ..pushClipRect(const Rect.fromLTRB(100, 100, 400, 400));
 
     addPlatformView(
-      _numberOfFrames == 10? 10000:id,
+      _numberOfFrames == 10 ? 10000 : id,
       dispatcher: view.platformDispatcher,
       sceneBuilder: builder,
     );
@@ -598,7 +600,7 @@ class PlatformViewClipRectAfterMovedScenario extends Scenario with _BasePlatform
   @override
   void onDrawFrame() {
     if (_numberOfFrames < 10) {
-      _numberOfFrames ++;
+      _numberOfFrames++;
       _y -= 10;
       view.platformDispatcher.scheduleFrame();
     }
@@ -639,7 +641,6 @@ class PlatformViewClipRRectScenario extends PlatformViewScenario {
   }
 }
 
-
 /// Platform view with clip rrect.
 /// The bounding rect of the rrect is the same as PlatformView and only the corner radii clips the PlatformView.
 class PlatformViewLargeClipRRectScenario extends PlatformViewScenario {
@@ -667,41 +668,6 @@ class PlatformViewLargeClipRRectScenario extends PlatformViewScenario {
     addPlatformView(
       id,
       dispatcher: view.platformDispatcher,
-      sceneBuilder: builder,
-    );
-
-    finishBuilder(builder);
-  }
-}
-
-
-/// Platform view with clip rrect.
-/// The bounding rect of the rrect is the same as PlatformView and only the corner radii clips the PlatformView.
-class PlatformViewLargeClipRRectScenario extends PlatformViewScenario {
-  /// Constructs a platform view with large clip rrect scenario.
-  PlatformViewLargeClipRRectScenario(
-    PlatformDispatcher dispatcher, {
-    int id = 0,
-  }) : super(dispatcher, id: id);
-
-  @override
-  void onBeginFrame(Duration duration) {
-    final SceneBuilder builder = SceneBuilder();
-    builder.pushClipRRect(
-      RRect.fromLTRBAndCorners(
-        0,
-        0,
-        500,
-        500,
-        topLeft: const Radius.circular(15),
-        topRight: const Radius.circular(50),
-        bottomLeft: const Radius.circular(50),
-      ),
-    );
-
-    addPlatformView(
-      id,
-      dispatcher: dispatcher,
       sceneBuilder: builder,
     );
 
@@ -823,7 +789,8 @@ class PlatformViewClipRRectWithTransformScenario extends PlatformViewScenario {
 
 /// Platform view with clip rrect after transformed.
 /// The bounding rect of the rrect is the same as PlatformView and only the corner radii clips the PlatformView.
-class PlatformViewLargeClipRRectWithTransformScenario extends PlatformViewScenario {
+class PlatformViewLargeClipRRectWithTransformScenario
+    extends PlatformViewScenario {
   /// Constructs a platform view with large clip rrect with transform scenario.
   PlatformViewLargeClipRRectWithTransformScenario(
     super.view, {
@@ -852,54 +819,6 @@ class PlatformViewLargeClipRRectWithTransformScenario extends PlatformViewScenar
     addPlatformView(
       id,
       dispatcher: view.platformDispatcher,
-      sceneBuilder: builder,
-    );
-
-    // Add a translucent rect that has the same size of PlatformView.
-    final PictureRecorder recorder = PictureRecorder();
-    final Canvas canvas = Canvas(recorder);
-    canvas.drawRect(
-      const Rect.fromLTWH(0, 0, 500, 500),
-      Paint()..color = const Color(0x22FF0000),
-    );
-    final Picture picture = recorder.endRecording();
-    builder.addPicture(Offset.zero, picture);
-
-    finishBuilder(builder);
-  }
-}
-
-/// Platform view with clip rrect after transformed.
-/// The bounding rect of the rrect is the same as PlatformView and only the corner radii clips the PlatformView.
-class PlatformViewLargeClipRRectWithTransformScenario extends PlatformViewScenario {
-  /// Constructs a platform view with large clip rrect with transform scenario.
-  PlatformViewLargeClipRRectWithTransformScenario(
-    PlatformDispatcher dispatcher, {
-    int id = 0,
-  }) : super(dispatcher, id: id);
-
-  @override
-  void onBeginFrame(Duration duration) {
-    final Matrix4 matrix4 = Matrix4.identity()
-      ..rotateZ(1)
-      ..scale(0.5, 0.5, 1.0)
-      ..translate(1000.0, 100.0);
-
-    final SceneBuilder builder = SceneBuilder()..pushTransform(matrix4.storage);
-    builder.pushClipRRect(
-      RRect.fromLTRBAndCorners(
-        0,
-        0,
-        500,
-        500,
-        topLeft: const Radius.circular(15),
-        topRight: const Radius.circular(50),
-        bottomLeft: const Radius.circular(50),
-      ),
-    );
-    addPlatformView(
-      id,
-      dispatcher: dispatcher,
       sceneBuilder: builder,
     );
 
@@ -1124,13 +1043,12 @@ class PlatformViewForTouchIOSScenario extends Scenario
 ///
 class PlatformViewForOverlappingPlatformViewsScenario extends Scenario
     with _BasePlatformViewScenarioMixin {
-
   /// Creates the PlatformViewForOverlappingPlatformViewsScenario.
   PlatformViewForOverlappingPlatformViewsScenario(
-      super.view, {
-        required this.foregroundId,
-        required this.backgroundId,
-      }) {
+    super.view, {
+    required this.foregroundId,
+    required this.backgroundId,
+  }) {
     _nextFrame = _firstFrame;
   }
 
@@ -1217,7 +1135,11 @@ class PlatformViewForOverlappingPlatformViewsScenario extends Scenario
     final PointerData data = packet.data.first;
     final double x = data.physicalX;
     final double y = data.physicalY;
-    if (data.change == PointerChange.up && 100 <= x && x < 200 && 100 <= y && y < 200) {
+    if (data.change == PointerChange.up &&
+        100 <= x &&
+        x < 200 &&
+        100 <= y &&
+        y < 200) {
       const int valueString = 7;
       const int valueInt32 = 3;
       const int valueMap = 13;
@@ -1234,7 +1156,7 @@ class PlatformViewForOverlappingPlatformViewsScenario extends Scenario
       view.platformDispatcher.sendPlatformMessage(
         'flutter/platform_views',
         message.buffer.asByteData(),
-            (ByteData? response) {},
+        (ByteData? response) {},
       );
     }
   }
@@ -1354,8 +1276,8 @@ class TwoPlatformViewsWithOtherBackDropFilter extends Scenario
     super.view, {
     required int firstId,
     required int secondId,
-  }) : _firstId = firstId,
-       _secondId = secondId;
+  })  : _firstId = firstId,
+        _secondId = secondId;
 
   final int _firstId;
   final int _secondId;
@@ -1381,14 +1303,12 @@ class TwoPlatformViewsWithOtherBackDropFilter extends Scenario
 
     builder.pushOffset(0, 200);
 
-    addPlatformView(
-      _firstId,
-      dispatcher: view.platformDispatcher,
-      sceneBuilder: builder,
-      width: 100,
-      height: 100,
-      text: 'platform view 1'
-    );
+    addPlatformView(_firstId,
+        dispatcher: view.platformDispatcher,
+        sceneBuilder: builder,
+        width: 100,
+        height: 100,
+        text: 'platform view 1');
 
     final PictureRecorder recorder2 = PictureRecorder();
     final Canvas canvas2 = Canvas(recorder2);
@@ -1443,8 +1363,8 @@ class PlatformViewScrollingUnderWidget extends Scenario
     super.view, {
     required int firstPlatformViewId,
     required int lastPlatformViewId,
-  }) : _firstPlatformViewId = firstPlatformViewId,
-       _lastPlatformViewId = lastPlatformViewId;
+  })  : _firstPlatformViewId = firstPlatformViewId,
+        _lastPlatformViewId = lastPlatformViewId;
 
   final int _firstPlatformViewId;
 
@@ -1513,7 +1433,7 @@ class PlatformViewScrollingUnderWidget extends Scenario
   }
 }
 
-final Map<String, int> _createdPlatformViews = <String, int> {};
+final Map<String, int> _createdPlatformViews = <String, int>{};
 
 /// Adds the platform view to the scene.
 ///
@@ -1545,7 +1465,8 @@ void addPlatformView(
     return;
   }
 
-  final bool usesAndroidHybridComposition = scenarioParams['use_android_view'] as bool? ?? false;
+  final bool usesAndroidHybridComposition =
+      scenarioParams['use_android_view'] as bool? ?? false;
   final bool expectAndroidHybridCompositionFallback =
       scenarioParams['expect_android_view_fallback'] as bool? ?? false;
 
@@ -1594,8 +1515,7 @@ void addPlatformView(
       ..._to32(0), // LTR
       valueString,
       ..._encodeString('hybridFallback'),
-      if (expectAndroidHybridCompositionFallback) valueTrue
-      else valueFalse,
+      if (expectAndroidHybridCompositionFallback) valueTrue else valueFalse,
     ],
     if (Platform.isAndroid && usesAndroidHybridComposition) ...<int>[
       valueString,
@@ -1653,10 +1573,10 @@ Future<void> addPlatformViewToSceneBuilder(
     sceneBuilder.addPlatformView(id, width: width, height: height);
   } else if (Platform.isAndroid) {
     final bool expectAndroidHybridCompositionFallback =
-      scenarioParams['expect_android_view_fallback'] as bool? ?? false;
+        scenarioParams['expect_android_view_fallback'] as bool? ?? false;
     final bool usesAndroidHybridComposition =
-      (scenarioParams['use_android_view'] as bool? ?? false) ||
-      expectAndroidHybridCompositionFallback;
+        (scenarioParams['use_android_view'] as bool? ?? false) ||
+            expectAndroidHybridCompositionFallback;
     if (usesAndroidHybridComposition) {
       sceneBuilder.addPlatformView(id, width: width, height: height);
     } else if (textureId != -1) {

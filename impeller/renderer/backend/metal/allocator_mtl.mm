@@ -206,7 +206,7 @@ std::shared_ptr<Texture> AllocatorMTL::OnCreateTexture(
   mtl_texture_desc.storageMode = ToMTLStorageMode(
       desc.storage_mode, supports_memoryless_targets_, supports_uma_);
 
-  if (@available(macOS 12.5, ios 15.0, *)) {
+  if (@available(macOS 12.5, ios 15.0, tvos 16.0, *)) {
     if (desc.compression_type == CompressionType::kLossy &&
         SupportsLossyTextureCompression(device_)) {
       mtl_texture_desc.compressionType = MTLTextureCompressionTypeLossy;
