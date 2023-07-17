@@ -459,7 +459,7 @@ deps = {
    Var('dart_git') + '/test_reflective_loader.git@a85a930ad3736f93b96f6cc104d3576c1ae19e0e',
 
   'src/third_party/dart/third_party/pkg/tools':
-   Var('dart_git') + '/tools.git@5a57b3a8d5f430173ef55cb030e3649bbd3e116d',
+   Var('dart_git') + '/tools.git@0304fbbb42989abd9ab6bbdfad26d830c96a7574',
 
   'src/third_party/dart/third_party/pkg/typed_data':
    Var('dart_git') + '/typed_data.git@d85363d2efb333afce07ec409a529ec32986e1a2',
@@ -565,8 +565,8 @@ deps = {
    Var('dart_git') + '/root_certificates.git' + '@' + Var('dart_root_certificates_rev'),
 
   'src/third_party/skia':
-  Var('skia_git') + '/skia.git' + '@' +  Var('skia_revision'),
-  #Var('upc_git') + '/flutter-tvos-skia.git' + '@' + Var('upc_revision'),
+ # Var('skia_git') + '/skia.git' + '@' +  Var('skia_revision'),
+  Var('upc_git') + '/flutter-tvos-skia.git' + '@' + Var('upc_revision'),
 
   'src/third_party/ocmock':
    Var('ocmock_git') + '@' +  Var('ocmock_rev'),
