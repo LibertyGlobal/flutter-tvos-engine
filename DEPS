@@ -459,7 +459,7 @@ deps = {
    Var('dart_git') + '/test_reflective_loader.git@a85a930ad3736f93b96f6cc104d3576c1ae19e0e',
 
   'src/third_party/dart/third_party/pkg/tools':
-   Var('dart_git') + '/tools.git@0304fbbb42989abd9ab6bbdfad26d830c96a7574',
+   Var('dart_git') + '/tools.git@5a57b3a8d5f430173ef55cb030e3649bbd3e116d',
 
   'src/third_party/dart/third_party/pkg/typed_data':
    Var('dart_git') + '/typed_data.git@d85363d2efb333afce07ec409a529ec32986e1a2',
