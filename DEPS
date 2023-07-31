@@ -309,8 +309,8 @@ deps = {
    Var('fuchsia_git') + '/protobuf-gn' + '@' + Var('dart_protobuf_gn_rev'),
 
   'src/third_party/dart':
-  Var('dart_git') + '/sdk.git' + '@' + Var('dart_revision'),
-  #Var('upc_git') + '/flutter-tvos-dart.git' + '@' + Var('upc_revision'),
+  #Var('dart_git') + '/sdk.git' + '@' + Var('dart_revision'),
+  Var('upc_git') + '/flutter-tvos-dart.git' + '@' + Var('upc_revision'),
 
   # WARNING: Unused Dart dependencies in the list below till "WARNING:" marker are removed automatically - see create_updated_flutter_deps.py.
 
