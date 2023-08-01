@@ -299,9 +299,8 @@ using namespace flutter;
   #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   return @{@"value" : @([UIPasteboard generalPasteboard].hasStrings)};
   #else
-  return @{@"value" : @(hasStrings)};
+  return @{@"value" : @false};
   #endif
-
 }
 
 - (BOOL)isLiveTextInputAvailable {
