@@ -107,8 +107,8 @@ static bool LogMTLCommandBufferErrorIfPresent(id<MTLCommandBuffer> buffer) {
   return false;
 }
 
-#ifndef FLUTTER_RELEASE
 static id<MTLCommandBuffer> CreateCommandBuffer(id<MTLCommandQueue> queue) {
+#ifndef FLUTTER_RELEASE  
   if (@available(iOS 14.0, tvOS 14.0, macOS 11.0, *)) {
     auto desc = [[MTLCommandBufferDescriptor alloc] init];
     // Degrades CPU performance slightly but is well worth the cost for typical
@@ -116,9 +116,9 @@ static id<MTLCommandBuffer> CreateCommandBuffer(id<MTLCommandQueue> queue) {
     desc.errorOptions = MTLCommandBufferErrorOptionEncoderExecutionStatus;
     return [queue commandBufferWithDescriptor:desc];
   }
+#endif  
   return [queue commandBuffer];
-#endif  // FLUTTER_RELEASE
-
+  // FLUTTER_RELEASE
 }
 
 CommandBufferMTL::CommandBufferMTL(const std::weak_ptr<const Context>& context,
