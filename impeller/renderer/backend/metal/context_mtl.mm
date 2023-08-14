@@ -33,7 +33,7 @@ static bool DeviceSupportsFramebufferFetch(id<MTLDevice> device) {
   #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
     return [device supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily2_v1];
   #else  
-    return [device supportsFeatureSet:MTLFeatureSet_tvOS_GPUFamily2_v1];
+    return [device supportsFeatureSet:MTLFeatureSet_tvOS_GPUFamily1_v1];
   #endif 
 #else
   return false;

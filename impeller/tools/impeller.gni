@@ -426,7 +426,7 @@ template("_impeller_shaders_metal") {
     shader_target_flag = ""
     defines = [ "IMPELLER_TARGET_METAL" ]
     if (is_ios) {
-      shader_target_flag = "--metal-ios"
+      shader_target_flag = "--metal-tvos"
       defines += [ "IMPELLER_TARGET_METAL_IOS" ]
     } else if (is_mac) {
       shader_target_flag = "--metal-desktop"

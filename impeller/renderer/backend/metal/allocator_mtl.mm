@@ -34,7 +34,7 @@ static bool DeviceSupportsMemorylessTargets(id<MTLDevice> device) {
     #endif
     }
 #else
-  return false;
+  return [device supportsFeatureSet:MTLFeatureSet_tvOS_GPUFamily1_v1];;
 #endif
   
   FML_UNREACHABLE();
@@ -88,6 +88,9 @@ static ISize DeviceMaxTextureSizeSupported(id<MTLDevice> device) {
         return {8192, 8192};
     }
 #else
+  if ([device supportsFeatureSet:MTLFeatureSet_tvOS_GPUFamily2_v1])
+    return {16384, 16384};
+  else
     return {8192, 8192};
 #endif
  

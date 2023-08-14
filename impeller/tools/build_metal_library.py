@@ -66,11 +66,11 @@ def main():
     ]
   elif args.platform == 'ios':
     command += [
-        'iphoneos',
+        'appletvos',
     ]
   elif args.platform == 'ios-simulator':
     command += [
-        'iphonesimulator',
+        'appletvsimulator',
     ]
   else:
     raise 'Unknown target platform'
@@ -104,12 +104,12 @@ def main():
   elif args.platform == 'ios':
     command += [
         '--std=ios-metal%s' % args.metal_version,
-        '-mios-version-min=11.0',
+        '-mtvos-version-min=12.0',
     ]
   elif args.platform == 'ios-simulator':
     command += [
         '--std=ios-metal%s' % args.metal_version,
-        '-miphonesimulator-version-min=11.0',
+        '-mappletvsimulator-version-min=12.0',
     ]
   else:
     raise 'Unknown target platform'
