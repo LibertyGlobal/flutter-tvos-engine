@@ -8,6 +8,8 @@
 # to list the dependency's destination directory.
 
 vars = {
+  'upc_git': 'https://github.com/LibertyGlobal',
+  'upc_revision': '3.27.4',
   'chromium_git': 'https://chromium.googlesource.com',
   'swiftshader_git': 'https://swiftshader.googlesource.com',
   'dart_git': 'https://dart.googlesource.com',
@@ -277,7 +279,8 @@ allowed_hosts = [
 ]
 
 deps = {
-  'src': 'https://github.com/flutter/buildroot.git' + '@' + 'f85c3be4bf808add6ba867b8ff7943fd235b7b5e',
+  # 'src': 'https://github.com/flutter/buildroot.git' + '@' + 'f85c3be4bf808add6ba867b8ff7943fd235b7b5e',
+  'src': Var('upc_git') + '/flutter-tvos-buildroot.git' + '@' + Var('upc_revision'),
 
   'src/flutter/third_party/depot_tools':
   Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '580b4ff3f5cd0dcaa2eacda28cefe0f45320e8f7',
@@ -328,7 +331,8 @@ deps = {
   'https://boringssl.googlesource.com/boringssl.git' + '@' + Var('dart_boringssl_rev'),
 
   'src/flutter/third_party/perfetto':
-   Var('flutter_git') + "/third_party/perfetto" + '@' + Var('dart_perfetto_rev'),
+  #  Var('flutter_git') + "/third_party/perfetto" + '@' + Var('dart_perfetto_rev'),
+  Var('upc_git') + '/flutter-tvos-perfetto.git' + '@' + Var('upc_revision'),
 
   'src/flutter/third_party/protobuf':
    Var('flutter_git') + '/third_party/protobuf' + '@' + Var('dart_libprotobuf_rev'),
@@ -339,7 +343,8 @@ deps = {
   #  Var('flutter_git') + '/third_party/protobuf-gn' + '@' + Var('dart_protobuf_gn_rev'),
 
   'src/flutter/third_party/dart':
-   Var('dart_git') + '/sdk.git' + '@' + Var('dart_revision'),
+   #  Var('dart_git') + '/sdk.git' + '@' + Var('dart_revision'),
+   Var('upc_git') + '/flutter-tvos-dart.git' + '@' + Var('upc_revision'),
 
   # WARNING: Unused Dart dependencies in the list below till "WARNING:" marker are removed automatically - see create_updated_flutter_deps.py.
 
@@ -627,7 +632,8 @@ deps = {
    Var('flutter_git') + '/third_party/freetype2' + '@' + 'bfc3453fdc85d87b45c896f68bf2e49ebdaeef0a',
 
   'src/flutter/third_party/skia':
-   Var('skia_git') + '/skia.git' + '@' +  Var('skia_revision'),
+  #  Var('skia_git') + '/skia.git' + '@' +  Var('skia_revision'),
+  Var('upc_git') + '/flutter-tvos-skia.git' + '@' + Var('upc_revision'),
 
   'src/flutter/third_party/ocmock':
    Var('flutter_git') + '/third_party/ocmock' + '@' +  Var('ocmock_rev'),

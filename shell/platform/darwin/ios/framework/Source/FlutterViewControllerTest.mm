@@ -301,6 +301,7 @@ extern NSNotificationName const FlutterViewControllerWillDealloc;
   XCTAssertTrue(keyboardSpringAnimation != nil);
 }
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 - (void)testKeyboardAnimationIsShowingAndCompounding {
   FlutterEngine* engine = [[FlutterEngine alloc] init];
   [engine runWithEntrypoint:nil];
@@ -390,7 +391,9 @@ extern NSNotificationName const FlutterViewControllerWillDealloc;
   XCTAssertFalse(isShowingAnimation4);
   XCTAssertTrue(isShowingAnimation3 == isShowingAnimation4);
 }
+#endif
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 - (void)testShouldIgnoreKeyboardNotification {
   FlutterEngine* mockEngine = OCMPartialMock([[FlutterEngine alloc] init]);
   [mockEngine createShell:@"" libraryURI:@"" initialRoute:nil];
@@ -495,6 +498,7 @@ extern NSNotificationName const FlutterViewControllerWillDealloc;
     XCTAssertTrue(shouldIgnore == YES);
   }
 }
+#endif
 - (void)testKeyboardAnimationWillNotCrashWhenEngineDestroyed {
   FlutterEngine* engine = [[FlutterEngine alloc] init];
   [engine runWithEntrypoint:nil];
@@ -534,6 +538,7 @@ extern NSNotificationName const FlutterViewControllerWillDealloc;
   XCTAssertTrue(fulfillTime - startTime > delayTime);
 }
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 - (void)testCalculateKeyboardAttachMode {
   FlutterEngine* mockEngine = OCMPartialMock([[FlutterEngine alloc] init]);
   [mockEngine createShell:@"" libraryURI:@"" initialRoute:nil];
@@ -662,6 +667,7 @@ extern NSNotificationName const FlutterViewControllerWillDealloc;
   keyboardMode = [viewControllerMock calculateKeyboardAttachMode:notification];
   XCTAssertTrue(keyboardMode == FlutterKeyboardModeHidden);
 }
+#endif
 
 - (void)testCalculateMultitaskingAdjustment {
   FlutterEngine* mockEngine = OCMPartialMock([[FlutterEngine alloc] init]);
@@ -719,6 +725,7 @@ extern NSNotificationName const FlutterViewControllerWillDealloc;
   XCTAssertTrue(inset == 300 * screen.scale);
 }
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 - (void)testHandleKeyboardNotification {
   FlutterEngine* engine = [[FlutterEngine alloc] init];
   [engine runWithEntrypoint:nil];
@@ -756,7 +763,9 @@ extern NSNotificationName const FlutterViewControllerWillDealloc;
   OCMVerify([viewControllerMock startKeyBoardAnimation:0.25]);
   [self waitForExpectationsWithTimeout:5.0 handler:nil];
 }
+#endif
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 - (void)testEnsureBottomInsetIsZeroWhenKeyboardDismissed {
   FlutterEngine* mockEngine = OCMPartialMock([[FlutterEngine alloc] init]);
   [mockEngine createShell:@"" libraryURI:@"" initialRoute:nil];
@@ -780,6 +789,7 @@ extern NSNotificationName const FlutterViewControllerWillDealloc;
   [viewControllerMock handleKeyboardNotification:fakeNotification];
   XCTAssertTrue(viewControllerMock.targetViewInsetBottom == 0);
 }
+#endif
 
 - (void)testEnsureViewportMetricsWillInvokeAndDisplayLinkWillInvalidateInViewDidDisappear {
   FlutterEngine* mockEngine = OCMPartialMock([[FlutterEngine alloc] init]);
@@ -1421,6 +1431,7 @@ extern NSNotificationName const FlutterViewControllerWillDealloc;
   [mockNavigationChannel stopMocking];
 }
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 - (void)testPerformOrientationUpdateForcesOrientationChange {
   [self orientationTestWithOrientationUpdate:UIInterfaceOrientationMaskPortrait
                           currentOrientation:UIInterfaceOrientationLandscapeLeft
@@ -1498,6 +1509,8 @@ extern NSNotificationName const FlutterViewControllerWillDealloc;
                         resultingOrientation:UIInterfaceOrientationPortrait];
 }
 
+#endif
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 - (void)testPerformOrientationUpdateDoesNotForceOrientationChange {
   [self orientationTestWithOrientationUpdate:UIInterfaceOrientationMaskAll
                           currentOrientation:UIInterfaceOrientationPortrait
@@ -1564,9 +1577,11 @@ extern NSNotificationName const FlutterViewControllerWillDealloc;
                         didChangeOrientation:NO
                         resultingOrientation:static_cast<UIInterfaceOrientation>(0)];
 }
+#endif
 
 // Perform an orientation update test that fails when the expected outcome
 // for an orientation update is not met
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 - (void)orientationTestWithOrientationUpdate:(UIInterfaceOrientationMask)mask
                           currentOrientation:(UIInterfaceOrientation)currentOrientation
                         didChangeOrientation:(BOOL)didChange
@@ -1633,6 +1648,7 @@ extern NSNotificationName const FlutterViewControllerWillDealloc;
   [mockApplication stopMocking];
   XCTAssertNil(weakPreferences);
 }
+#endif
 
 // Creates a mocked UITraitCollection with nil values for everything except accessibilityContrast,
 // which is set to the given "contrast".
@@ -1689,19 +1705,21 @@ extern NSNotificationName const FlutterViewControllerWillDealloc;
   engine.viewController = nil;
 }
 
-- (void)testHideOverlay {
-  FlutterDartProject* project = [[FlutterDartProject alloc] init];
-  FlutterEngine* engine = [[FlutterEngine alloc] initWithName:@"foobar" project:project];
-  [engine createShell:@"" libraryURI:@"" initialRoute:nil];
-  FlutterViewController* realVC = [[FlutterViewController alloc] initWithEngine:engine
-                                                                        nibName:nil
-                                                                         bundle:nil];
-  XCTAssertFalse(realVC.prefersHomeIndicatorAutoHidden, @"");
-  [[NSNotificationCenter defaultCenter] postNotificationName:FlutterViewControllerHideHomeIndicator
-                                                      object:nil];
-  XCTAssertTrue(realVC.prefersHomeIndicatorAutoHidden, @"");
-  engine.viewController = nil;
-}
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
+  - (void)testHideOverlay {
+    FlutterDartProject* project = [[FlutterDartProject alloc] init];
+    FlutterEngine* engine = [[FlutterEngine alloc] initWithName:@"foobar" project:project];
+    [engine createShell:@"" libraryURI:@"" initialRoute:nil];
+    FlutterViewController* realVC = [[FlutterViewController alloc] initWithEngine:engine
+                                                                          nibName:nil
+                                                                        bundle:nil];
+    XCTAssertFalse(realVC.prefersHomeIndicatorAutoHidden, @"");
+    [[NSNotificationCenter defaultCenter] postNotificationName:FlutterViewControllerHideHomeIndicator
+                                                        object:nil];
+    XCTAssertTrue(realVC.prefersHomeIndicatorAutoHidden, @"");
+    engine.viewController = nil;
+  }
+#endif
 
 - (void)testNotifyLowMemory {
   FlutterEnginePartialMock* mockEngine = [[FlutterEnginePartialMock alloc] init];

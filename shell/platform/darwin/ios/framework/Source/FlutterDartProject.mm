@@ -27,6 +27,7 @@ extern const intptr_t kPlatformStrongDillSize;
 
 static const char* kApplicationKernelSnapshotFileName = "kernel_blob.bin";
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 static BOOL DoesHardwareSupportWideGamut() {
   static BOOL result = NO;
   static dispatch_once_t once_token = 0;
@@ -42,6 +43,7 @@ static BOOL DoesHardwareSupportWideGamut() {
   });
   return result;
 }
+#endif
 
 flutter::Settings FLTDefaultSettingsForBundle(NSBundle* bundle, NSProcessInfo* processInfoOrNil) {
   auto command_line = flutter::CommandLineFromNSProcessInfo(processInfoOrNil);
@@ -167,13 +169,21 @@ flutter::Settings FLTDefaultSettingsForBundle(NSBundle* bundle, NSProcessInfo* p
   // As of Xcode 14.1, the wide gamut surface pixel formats are not supported by
   // the simulator.
   settings.enable_wide_gamut = false;
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   // Removes unused function warning.
   (void)DoesHardwareSupportWideGamut;
+#endif  
 #else
   NSNumber* nsEnableWideGamut = [mainBundle objectForInfoDictionaryKey:@"FLTEnableWideGamut"];
-  BOOL enableWideGamut =
-      (nsEnableWideGamut ? nsEnableWideGamut.boolValue : YES) && DoesHardwareSupportWideGamut();
-  settings.enable_wide_gamut = enableWideGamut;
+  #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
+      BOOL enableWideGamut =
+          (nsEnableWideGamut ? nsEnableWideGamut.boolValue : YES) && DoesHardwareSupportWideGamut();
+      settings.enable_wide_gamut = enableWideGamut;
+    #else
+      BOOL enableWideGamut = nsEnableWideGamut ? nsEnableWideGamut.boolValue : YES;
+      settings.enable_wide_gamut = enableWideGamut;
+    #endif
+    
 #endif
 
   if (!command_line.HasOption("enable-impeller")) {

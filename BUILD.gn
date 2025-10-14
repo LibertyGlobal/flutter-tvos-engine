@@ -160,7 +160,7 @@ group("flutter") {
 
   if ((flutter_runtime_mode == "debug" || flutter_runtime_mode == "profile") &&
       (is_ios || is_android)) {
-    public_deps += [ "//flutter/testing/scenario_app" ]
+  #    public_deps += [ "//flutter/testing/scenario_app" ]
   }
 }
 

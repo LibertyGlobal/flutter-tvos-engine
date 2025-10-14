@@ -22,6 +22,8 @@ std::unique_ptr<IOSSurface> IOSSurface::Create(std::shared_ptr<IOSContext> conte
   FML_DCHECK(context);
 
   if (@available(iOS METAL_IOS_VERSION_BASELINE, *)) {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunguarded-availability-new"
     if ([layer.get() isKindOfClass:[CAMetalLayer class]]) {
       switch (context->GetBackend()) {
         case IOSRenderingBackend::kSkia:
@@ -46,6 +48,7 @@ std::unique_ptr<IOSSurface> IOSSurface::Create(std::shared_ptr<IOSContext> conte
   if (context->GetBackend() == IOSRenderingBackend::kImpeller) {
     return std::make_unique<IOSSurfaceNoop>(std::move(context));
   }
+#pragma GCC diagnostic pop
 
   return std::make_unique<IOSSurfaceSoftware>(layer,              // layer
                                               std::move(context)  // context

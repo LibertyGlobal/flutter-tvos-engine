@@ -32,9 +32,11 @@ FLUTTER_ASSERT_ARC
 }
 
 - (UIScreen*)screen {
-  if (@available(iOS 13.0, *)) {
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
+  if (@available(iOS 13.0, tvOS 13.0, *)) {
     return self.window.windowScene.screen;
   }
+#endif
   return UIScreen.mainScreen;
 }
 

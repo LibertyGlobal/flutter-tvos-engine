@@ -159,6 +159,9 @@ LogMessage::~LogMessage() {
     __android_log_write(priority, "flutter", stream_.str().c_str());
 #elif defined(FML_OS_IOS)
     syslog(LOG_ALERT, "%s", stream_.str().c_str());
+#ifndef NDEBUG
+  return;
+#endif    
 #elif defined(OS_FUCHSIA)
     FuchsiaLogSeverity severity;
     switch (severity_) {

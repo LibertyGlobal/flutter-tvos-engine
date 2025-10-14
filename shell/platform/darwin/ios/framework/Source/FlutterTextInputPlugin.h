@@ -30,8 +30,15 @@ typedef NS_ENUM(NSInteger, FlutterScribbleInteractionStatus) {
   // NOLINTEND(readability-identifier-naming)
 };
 
+#ifdef TARGET_OS_TV
+@interface FlutterTextInputPlugin
+    : NSObject <FlutterKeySecondaryResponder>
+#else
+
 @interface FlutterTextInputPlugin
     : NSObject <FlutterKeySecondaryResponder, UIIndirectScribbleInteractionDelegate>
+#endif
+
 
 @property(nonatomic, weak) UIViewController* viewController;
 @property(nonatomic, weak) id<FlutterIndirectScribbleDelegate> indirectScribbleDelegate;
@@ -130,8 +137,12 @@ API_AVAILABLE(ios(13.0)) @interface FlutterTextPlaceholder : UITextPlaceholder
 #if FLUTTER_RUNTIME_MODE == FLUTTER_RUNTIME_MODE_DEBUG
 FLUTTER_DARWIN_EXPORT
 #endif
+#ifdef TARGET_OS_TV
+@interface FlutterTextInputView : UIView <UITextInput>
+#else
 @interface FlutterTextInputView
     : UIView <UITextInput, UIScribbleInteractionDelegate, UIEditMenuInteractionDelegate>
+#endif    
 
 // UITextInput
 @property(nonatomic, readonly) NSMutableString* text;
@@ -161,11 +172,12 @@ FLUTTER_DARWIN_EXPORT
 @property(nonatomic, weak) id<FlutterViewResponder> viewResponder;
 @property(nonatomic) FlutterScribbleFocusStatus scribbleFocusStatus;
 @property(nonatomic, strong) NSArray<FlutterTextSelectionRect*>* selectionRects;
-
+ 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 @property(nonatomic, strong) UIEditMenuInteraction* editMenuInteraction API_AVAILABLE(ios(16.0));
-- (void)resetScribbleInteractionStatusIfEnding;
+#endif
 - (BOOL)isScribbleAvailable;
-
+#endif
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
@@ -182,4 +194,4 @@ FLUTTER_DARWIN_EXPORT
 @property(nonatomic, readonly) id flutterFirstResponder;
 @end
 
-#endif  // FLUTTER_SHELL_PLATFORM_DARWIN_IOS_FRAMEWORK_SOURCE_FLUTTERTEXTINPUTPLUGIN_H_
+// FLUTTER_SHELL_PLATFORM_DARWIN_IOS_FRAMEWORK_SOURCE_FLUTTERTEXTINPUTPLUGIN_H_

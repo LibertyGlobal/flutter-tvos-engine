@@ -23,7 +23,7 @@ source_set("ocmock_src") {
     "-Wno-misleading-indentation",
   ]
   if (is_ios) {
-    cflags += [ "-mios-simulator-version-min=$ios_testing_deployment_target" ]
+    cflags += [ "-mappletvsimulator-version-min=$ios_testing_deployment_target" ]
   }
 
   sources = [
