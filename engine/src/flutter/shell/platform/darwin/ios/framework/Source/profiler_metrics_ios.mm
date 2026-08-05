@@ -8,7 +8,9 @@
 
 #import "flutter/fml/platform/darwin/cf_utils.h"
 #import "flutter/shell/platform/darwin/common/framework/Headers/FlutterMacros.h"
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 #import "flutter/shell/platform/darwin/ios/framework/Source/IOKit.h"
+#endif
 
 FLUTTER_ASSERT_ARC
 
@@ -40,6 +42,7 @@ class MachThreads {
 
 namespace fml {
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 /// fml::CFRef retain and release implementations for io_object_t and related types.
 template <>
 struct CFRefTraits<io_object_t> {
@@ -47,6 +50,7 @@ struct CFRefTraits<io_object_t> {
   static void Retain(io_object_t instance) { IOObjectRetain(instance); }
   static void Release(io_object_t instance) { IOObjectRelease(instance); }
 };
+#endif
 
 }  // namespace fml
 
@@ -58,6 +62,7 @@ namespace {
 #if FLUTTER_RUNTIME_MODE == FLUTTER_RUNTIME_MODE_DEBUG || \
     FLUTTER_RUNTIME_MODE == FLUTTER_RUNTIME_MODE_PROFILE
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 std::optional<GpuUsageInfo> FindGpuUsageInfo(io_iterator_t iterator) {
   for (fml::CFRef<io_registry_entry_t> reg_entry(IOIteratorNext(iterator)); reg_entry.Get();
        reg_entry.Reset(IOIteratorNext(iterator))) {
@@ -77,18 +82,22 @@ std::optional<GpuUsageInfo> FindGpuUsageInfo(io_iterator_t iterator) {
   }
   return std::nullopt;
 }
+#endif
 
 [[maybe_unused]] std::optional<GpuUsageInfo> FindSimulatorGpuUsageInfo() {
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   io_iterator_t io_iterator;
   if (IOServiceGetMatchingServices(kIOMasterPortDefault, IOServiceNameMatching("IntelAccelerator"),
                                    &io_iterator) == kIOReturnSuccess) {
     fml::CFRef<io_iterator_t> iterator(io_iterator);
     return FindGpuUsageInfo(iterator.Get());
   }
+#endif
   return std::nullopt;
 }
 
 [[maybe_unused]] std::optional<GpuUsageInfo> FindDeviceGpuUsageInfo() {
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   io_iterator_t io_iterator;
   if (IOServiceGetMatchingServices(kIOMasterPortDefault, IOServiceNameMatching("sgx"),
                                    &io_iterator) == kIOReturnSuccess) {
@@ -106,6 +115,7 @@ std::optional<GpuUsageInfo> FindGpuUsageInfo(io_iterator_t iterator) {
       }
     }
   }
+#endif
   return std::nullopt;
 }
 
@@ -116,11 +126,13 @@ std::optional<GpuUsageInfo> PollGpuUsage() {
 #if (FLUTTER_RUNTIME_MODE == FLUTTER_RUNTIME_MODE_RELEASE || \
      FLUTTER_RUNTIME_MODE == FLUTTER_RUNTIME_MODE_JIT_RELEASE)
   return std::nullopt;
-#elif TARGET_IPHONE_SIMULATOR
+#elif TARGET_IPHONE_SIMULATOR && !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   return FindSimulatorGpuUsageInfo();
-#elif TARGET_OS_IOS
+#elif TARGET_OS_IOS && !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   return FindDeviceGpuUsageInfo();
-#endif  // TARGET_IPHONE_SIMULATOR
+#else
+  return std::nullopt;
+#endif
 }
 }  // namespace
 

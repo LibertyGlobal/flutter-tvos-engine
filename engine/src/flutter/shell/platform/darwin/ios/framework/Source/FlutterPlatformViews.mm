@@ -4,7 +4,9 @@
 
 #import "flutter/shell/platform/darwin/ios/framework/Source/FlutterPlatformViews_Internal.h"
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 #import <WebKit/WebKit.h>
+#endif
 
 #include "flutter/display_list/effects/dl_image_filter.h"
 #include "flutter/fml/platform/darwin/cf_utils.h"
@@ -519,7 +521,9 @@ static BOOL _preparedOnce = NO;
         (FlutterPlatformViewGestureRecognizersBlockingPolicy)blockingPolicy {
   self = [super initWithFrame:embeddedView.frame];
   if (self) {
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
     self.multipleTouchEnabled = YES;
+#endif
     _embeddedView = embeddedView;
     embeddedView.autoresizingMask =
         (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
@@ -564,9 +568,11 @@ static BOOL _preparedOnce = NO;
   if (remainingSubviewDepth < 0) {
     return NO;
   }
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   if ([view isKindOfClass:[WKWebView class]]) {
     return YES;
   }
+#endif
   for (UIView* subview in view.subviews) {
     if ([self containsWebView:subview remainingSubviewDepth:remainingSubviewDepth - 1]) {
       return YES;

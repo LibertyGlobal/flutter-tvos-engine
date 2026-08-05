@@ -4,10 +4,30 @@
 
 config("sdk") {
   cflags_cc = [ "-stdlib=libc++" ]
+
+  # Add SubFrameworks path for tvOS SDK
+  if (target_os == "ios") {
+    cflags = [
+      "-iframework",
+      rebase_path("$ios_sdk_path/System/Library/SubFrameworks", root_build_dir),
+    ]
+    cflags_cc += cflags
+    cflags_objc = cflags
+    cflags_objcc = cflags
+  }
 }
 
 config("ios_application_extension") {
   cflags_objc = [ "-fapplication-extension" ]
   cflags_objcc = [ "-fapplication-extension" ]
   ldflags = [ "-fapplication-extension" ]
+}
+
+# Configuration to make tvOS SDK think it's iOS
+# This overrides the default TARGET_OS_* macros when using tvOS SDK
+config("tvos_as_ios") {
+  defines = [
+    "TARGET_OS_IPHONE=1",
+    "TARGET_OS_TV=0",
+  ]
 }

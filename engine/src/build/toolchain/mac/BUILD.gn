@@ -255,7 +255,7 @@ mac_toolchain("ios_clang_arm") {
   is_clang = true
 
   sysroot_rel = rebase_path(ios_sdk_path, root_build_dir)
-  sysroot_flags = "-isysroot $sysroot_rel -miphoneos-version-min=$ios_deployment_target"
+  sysroot_flags = "-isysroot $sysroot_rel -mappletvos-version-min=$ios_deployment_target"
 }
 
 # Toolchain used for iOS simulator targets (arm64).
@@ -272,7 +272,7 @@ mac_toolchain("ios_clang_arm_sim") {
   is_clang = true
 
   sysroot_rel = rebase_path(ios_sdk_path, root_build_dir)
-  sysroot_flags = "-isysroot $sysroot_rel -mios-simulator-version-min=$ios_deployment_target"
+  sysroot_flags = "-isysroot $sysroot_rel -mappletvsimulator-version-min=$ios_deployment_target"
 }
 
 # Toolchain used for iOS simulator targets (x64).
@@ -289,7 +289,7 @@ mac_toolchain("ios_clang_x64_sim") {
   is_clang = true
 
   sysroot_rel = rebase_path(ios_sdk_path, root_build_dir)
-  sysroot_flags = "-isysroot $sysroot_rel -mios-simulator-version-min=$ios_deployment_target"
+  sysroot_flags = "-isysroot $sysroot_rel -mappletvsimulator-version-min=$ios_deployment_target"
 }
 
 # Toolchain used for Mac X64 host targets.

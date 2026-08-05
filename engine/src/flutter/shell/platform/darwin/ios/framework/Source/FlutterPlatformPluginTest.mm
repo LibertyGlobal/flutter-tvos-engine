@@ -19,19 +19,23 @@ FLUTTER_ASSERT_ARC
 
 @interface FlutterPlatformPlugin ()
 - (BOOL)isLiveTextInputAvailable;
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 - (void)searchWeb:(NSString*)searchTerm;
 - (void)showLookUpViewController:(NSString*)term;
 - (void)showShareViewController:(NSString*)content;
+#endif
 @end
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 @interface UIViewController ()
 - (void)presentViewController:(UIViewController*)viewControllerToPresent
                      animated:(BOOL)flag
                    completion:(void (^)(void))completion;
 @end
+#endif
 
 @implementation FlutterPlatformPluginTest
-
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 - (void)testSearchWebInvokedWithEscapedTerm {
   id mockApplication = OCMClassMock([UIApplication class]);
   OCMStub([mockApplication sharedApplication]).andReturn(mockApplication);
@@ -248,6 +252,7 @@ FLUTTER_ASSERT_ARC
   [plugin handleMethodCall:methodCall result:result];
   [self waitForExpectationsWithTimeout:1 handler:nil];
 }
+#endif
 
 - (void)testPopSystemNavigator {
   FlutterEngine* engine = [[FlutterEngine alloc] initWithName:@"test" project:nil];

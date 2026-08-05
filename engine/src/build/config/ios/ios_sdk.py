@@ -15,7 +15,7 @@ from pyutil.file_util import symlink
 # This script creates symlinks under flutter/prebuilts to the iphone and
 # iphone simulator SDKs.
 
-SDKs = ['iphoneos', 'iphonesimulator']
+SDKs = ['appletvos', 'appletvsimulator']
 
 PREBUILTS = os.path.realpath(os.path.join(
   os.path.dirname(__file__), os.pardir, os.pardir, os.pardir, 'flutter', 'prebuilts',
@@ -59,7 +59,7 @@ def main(argv):
   )
   parser.add_argument(
     '--sdk',
-    choices=['iphoneos', 'iphonesimulator'],
+    choices=['appletvos', 'appletvsimulator'],
     help='Which SDK to find.',
   )
   args = parser.parse_args()

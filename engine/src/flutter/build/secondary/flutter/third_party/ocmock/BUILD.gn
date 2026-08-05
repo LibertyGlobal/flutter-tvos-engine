@@ -22,10 +22,11 @@ source_set("ocmock_src") {
     "-fvisibility=default",
     "-Wno-misleading-indentation",
   ]
-  if (is_ios) {
-    cflags += [ "-mios-simulator-version-min=$ios_testing_deployment_target" ]
-  }
 
+# Version flags are handled by the main build config
+  # if (is_ios) {
+  #   cflags += [ "-mappletvsimulator-version-min=$ios_testing_deployment_target" ]
+  # }
   sources = [
     "$ocmock_path/OCMock/NSInvocation+OCMAdditions.h",
     "$ocmock_path/OCMock/NSInvocation+OCMAdditions.m",
@@ -115,7 +116,7 @@ static_library("ocmock") {
   # Force the static lib to include code from dependencies
   complete_static_lib = true
   if (is_ios) {
-    cflags = [ "-mios-simulator-version-min=$ios_testing_deployment_target" ]
+    cflags = [ "-mappletvsimulator-simulator-version-min=$ios_testing_deployment_target" ]
   }
   public_deps = [ ":ocmock_src" ]
 }

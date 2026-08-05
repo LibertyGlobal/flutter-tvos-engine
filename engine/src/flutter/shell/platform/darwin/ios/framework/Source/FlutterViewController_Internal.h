@@ -55,7 +55,9 @@ typedef void (^FlutterKeyboardAnimationCallback)(fml::TimePoint);
  *        This is ignored when `UIViewControllerBasedStatusBarAppearance` in info.plist
  *        of the app project is `false`.
  */
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 @property(nonatomic, assign, readwrite) BOOL prefersStatusBarHidden;
+#endif
 
 @property(nonatomic, readonly) FlutterPlatformViewsController* platformViewsController;
 

@@ -17,8 +17,9 @@
 namespace impeller {
 
 static bool DeviceSupportsDeviceTransientTargets(id<MTLDevice> device) {
-  // Refer to the "Memoryless render targets" feature in the table below:
-  // https://developer.apple.com/metal/Metal-Feature-Set-Tables.pdf
+// Refer to the "Memoryless render targets" feature in the table below:
+// https://developer.apple.com/metal/Metal-Feature-Set-Tables.pdf
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   if (@available(ios 13.0, tvos 13.0, macos 10.15, *)) {
     return [device supportsFamily:MTLGPUFamilyApple2];
   } else {
@@ -34,10 +35,18 @@ static bool DeviceSupportsDeviceTransientTargets(id<MTLDevice> device) {
     return false;
 #endif
   }
+#else
+  // tvOS always supports memoryless render targets
+  if (@available(tvOS 13.0, *)) {
+    return [device supportsFamily:MTLGPUFamilyApple2];
+  }
+  return true;  // Assume support for older tvOS versions
+#endif
   FML_UNREACHABLE();
 }
 
 static bool DeviceHasUnifiedMemoryArchitecture(id<MTLDevice> device) {
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   if (@available(ios 13.0, tvos 13.0, macOS 10.15, *)) {
     return [device hasUnifiedMemory];
   } else {
@@ -49,16 +58,20 @@ static bool DeviceHasUnifiedMemoryArchitecture(id<MTLDevice> device) {
     return false;
 #endif
   }
+#else
+  return false;
+#endif
   FML_UNREACHABLE();
 }
 
 ISize DeviceMaxTextureSizeSupported(id<MTLDevice> device) {
-  // Since Apple didn't expose API for us to get the max texture size, we have
-  // to use hardcoded data from
-  // https://developer.apple.com/metal/Metal-Feature-Set-Tables.pdf
-  // According to the feature set table, there are two supported max sizes :
-  // 16384 and 8192 for devices flutter support. The former is used on macs and
-  // latest ios devices. The latter is used on old ios devices.
+// Since Apple didn't expose API for us to get the max texture size, we have
+// to use hardcoded data from
+// https://developer.apple.com/metal/Metal-Feature-Set-Tables.pdf
+// According to the feature set table, there are two supported max sizes :
+// 16384 and 8192 for devices flutter support. The former is used on macs and
+// latest ios devices. The latter is used on old ios devices.
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   if (@available(macOS 10.15, iOS 13, tvOS 13, *)) {
     if ([device supportsFamily:MTLGPUFamilyApple3] ||
         [device supportsFamily:MTLGPUFamilyMacCatalyst1] ||
@@ -78,8 +91,20 @@ ISize DeviceMaxTextureSizeSupported(id<MTLDevice> device) {
 #endif
     return {8192, 8192};
   }
+#else
+  // tvOS support - use modern API or reasonable default
+  if (@available(tvOS 13, *)) {
+    if ([device supportsFamily:MTLGPUFamilyApple3]) {
+      return {16384, 16384};
+    }
+    return {8192, 8192};
+  }
+  // For older tvOS versions, use conservative limit
+  return {8192, 8192};
+#endif
 }
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 static bool SupportsLossyTextureCompression(id<MTLDevice> device) {
 #ifdef FML_OS_IOS_SIMULATOR
   return false;
@@ -90,6 +115,7 @@ static bool SupportsLossyTextureCompression(id<MTLDevice> device) {
   return false;
 #endif
 }
+#endif
 
 void DebugAllocatorStats::Increment(size_t size) {
   size_.fetch_add(size, std::memory_order_relaxed);
@@ -219,13 +245,14 @@ std::shared_ptr<Texture> AllocatorMTL::OnCreateTexture(
 
   mtl_texture_desc.storageMode = ToMTLStorageMode(
       desc.storage_mode, supports_memoryless_targets_, supports_uma_);
-
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   if (@available(macOS 12.5, ios 15.0, *)) {
     if (desc.compression_type == CompressionType::kLossy &&
         SupportsLossyTextureCompression(device_)) {
       mtl_texture_desc.compressionType = MTLTextureCompressionTypeLossy;
     }
   }
+#endif
 
 #ifdef IMPELLER_DEBUG
   if (desc.storage_mode != StorageMode::kDeviceTransient) {

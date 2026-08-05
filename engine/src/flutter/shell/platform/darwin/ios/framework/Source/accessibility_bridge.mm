@@ -11,6 +11,7 @@
 #import "flutter/shell/platform/darwin/ios/framework/Source/FlutterViewController_Internal.h"
 #import "flutter/shell/platform/darwin/ios/framework/Source/TextInputSemanticsObject.h"
 #import "flutter/shell/platform/darwin/ios/platform_view_ios.h"
+#import "flutter/shell/platform/darwin/ios/framework/Source/FlutterAccessibilitySelectionView.h"
 
 #include "flutter/common/constants.h"
 
@@ -94,6 +95,35 @@ void AccessibilityBridge::UpdateSemantics(
     const flutter::CustomAccessibilityAction& action = entry.second;
     actions_[action.id] = action;
   }
+
+  #if defined(TARGET_OS_TV) && TARGET_OS_TV
+
+    // tvOS approach
+    // on tvOS the accessibility focus rectangle is only visibele when the UIView is the topmost view and is focused.
+    // The SemanticsObject (based on UIAccessibilityElement) is not a real focusable element and is mapped to elements in the canvas-based view.
+    // Because of this the focus does not remain visible on screen when using the iOS implementation.
+    // The iOS implementation when using on tvOS reads out all semantics objects, while on tvOS only the focused widget should be read.
+    // To not have to deal with focus changing on flutter view and semantics object scroll views (multiple levels).
+    // A new single UIViews based Accessibility enabled is used to show the accessibility focus rectangle.
+    // When a semantics object has the focused state, then the view is moved to the position of the accessibility frame of the semantic object.
+    // Known issues:
+    // - "Explorer" mode is not working and behaves as "navigation" mode
+    // - "item chooser" mode is not working properly
+    // - Navigation focus rectangle is sometimes flashing a few times when the element is focused
+    // - Navigation focus rectangle is sometimes not visible (also seen in system UI)
+
+
+    // reset to make sure when focus is lost, selection rectangle is not visible on last focused one.
+    // It could be that the update does not update the focused element
+    if(last_focused_semantics_object_id_ != kSemanticObjectIdInvalid){
+        SemanticsObject* object = objects_[@(last_focused_semantics_object_id_)];
+        // check if last focused item is still focused
+        if(!object || !object.node.HasFlag(flutter::SemanticsFlags::kIsFocused)){
+            last_focused_semantics_object_id_ = kSemanticObjectIdInvalid;
+        }
+    }
+#endif
+
   for (const auto& entry : nodes) {
     const flutter::SemanticsNode& node = entry.second;
     SemanticsObject* object = GetOrCreateObject(node.id, nodes);
@@ -101,20 +131,32 @@ void AccessibilityBridge::UpdateSemantics(
     scrollOccured = scrollOccured || [object nodeWillCauseScroll:&node];
     needsAnnouncement = [object nodeShouldTriggerAnnouncement:&node];
     [object setSemanticsNode:&node];
+
+#if defined(TARGET_OS_TV) && TARGET_OS_TV
+    // Store focus uid, this could be changed in this update
+    if(node.HasFlag(flutter::SemanticsFlags::kIsFocused) && (object.accessibilityLabel != nil && object.accessibilityLabel.length > 0) ){
+        last_focused_semantics_object_id_ = node.id;
+    }
+#endif
+
     NSUInteger newChildCount = node.childrenInTraversalOrder.size();
     NSMutableArray* newChildren = [[NSMutableArray alloc] initWithCapacity:newChildCount];
     for (NSUInteger i = 0; i < newChildCount; ++i) {
       SemanticsObject* child = GetOrCreateObject(node.childrenInTraversalOrder[i], nodes);
       [newChildren addObject:child];
     }
+    #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
     NSMutableArray* newChildrenInHitTestOrder =
         [[NSMutableArray alloc] initWithCapacity:newChildCount];
     for (NSUInteger i = 0; i < newChildCount; ++i) {
       SemanticsObject* child = GetOrCreateObject(node.childrenInHitTestOrder[i], nodes);
       [newChildrenInHitTestOrder addObject:child];
     }
+    #endif
     object.children = newChildren;
-    object.childrenInHitTestOrder = newChildrenInHitTestOrder;
+    #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
+      object.childrenInHitTestOrder = newChildrenInHitTestOrder;
+    #endif
     if (!node.customAccessibilityActions.empty()) {
       NSMutableArray<FlutterCustomAccessibilityAction*>* accessibilityCustomActions =
           [[NSMutableArray alloc] init];
@@ -159,10 +201,12 @@ void AccessibilityBridge::UpdateSemantics(
   SemanticsObject* lastAdded = nil;
 
   if (root) {
+  #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
     if (!view_controller_.view.accessibilityElements) {
       view_controller_.view.accessibilityElements =
           @[ [root accessibilityContainer] ?: [NSNull null] ];
     }
+  #endif
     NSMutableArray<SemanticsObject*>* newRoutes = [[NSMutableArray alloc] init];
     [root collectRoutes:newRoutes];
     // Finds the last route that is not in the previous routes.
@@ -208,7 +252,12 @@ void AccessibilityBridge::UpdateSemantics(
   }
 
   if (!ios_delegate_->IsFlutterViewControllerPresentingModalViewController(view_controller_)) {
-    layoutChanged = layoutChanged || [doomed_uids count] > 0;
+    #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
+      layoutChanged = layoutChanged || [doomed_uids count] > 0;
+    #else
+        // force check for selection change/update
+        layoutChanged = true;
+    #endif
 
     if (routeChanged) {
       NSString* routeName = [lastAdded routeName];
@@ -217,6 +266,7 @@ void AccessibilityBridge::UpdateSemantics(
     }
 
     if (layoutChanged) {
+    #if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
       SemanticsObject* next = FindNextFocusableIfNecessary();
       SemanticsObject* lastFocused = [objects_ objectForKey:@(last_focused_semantics_object_id_)];
       // Only specify the focus item if the new focus is different, avoiding double focuses on the
@@ -225,6 +275,26 @@ void AccessibilityBridge::UpdateSemantics(
       ios_delegate_->PostAccessibilityNotification(
           UIAccessibilityLayoutChangedNotification,
           (routeChanged || next != lastFocused) ? next.nativeAccessibility : NULL);
+    #else
+      FlutterAccessibilitySelectionView *selectionOverlay = (FlutterAccessibilitySelectionView*)[view_controller_ getAccessibilitySelectionVliew];
+      if(selectionOverlay){
+        // For tvOS there is only one focusable accessibility element (which will be re-used)
+        if(!view_controller_.view.accessibilityElements) {
+            view_controller_.view.accessibilityElements = @[selectionOverlay];
+        }
+         if(last_focused_semantics_object_id_ != kSemanticObjectIdInvalid){
+            SemanticsObject* lastFocused =
+                 [objects_ objectForKey:@(last_focused_semantics_object_id_)];
+
+            // Force voice over for updated selection (Accessibility) element
+            [selectionOverlay updateSemantics:lastFocused];
+            ios_delegate_->PostAccessibilityNotification(UIAccessibilityLayoutChangedNotification, selectionOverlay);
+        } else {
+           // Force selection view to be hidden
+           [selectionOverlay updateSemantics:nil];
+        }
+      }
+    #endif
     } else if (scrollOccured) {
       // TODO(chunhtai): figure out what string to use for notification. At this
       // point, it is guarantee the previous focused object is still in the tree
@@ -271,10 +341,12 @@ static SemanticsObject* CreateObject(const flutter::SemanticsNode& node,
       !node.HasFlag(flutter::SemanticsFlags::kIsReadOnly)) {
     // Text fields are backed by objects that implement UITextInput.
     return [[TextInputSemanticsObject alloc] initWithBridge:weak_ptr uid:node.id];
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   } else if (!node.HasFlag(flutter::SemanticsFlags::kIsInMutuallyExclusiveGroup) &&
              (node.HasFlag(flutter::SemanticsFlags::kHasToggledState) ||
               node.HasFlag(flutter::SemanticsFlags::kHasCheckedState))) {
     return [[FlutterSwitchSemanticsObject alloc] initWithBridge:weak_ptr uid:node.id];
+#endif
   } else if (node.HasFlag(flutter::SemanticsFlags::kHasImplicitScrolling)) {
     return [[FlutterScrollableSemanticsObject alloc] initWithBridge:weak_ptr uid:node.id];
   } else if (node.IsPlatformViewNode()) {

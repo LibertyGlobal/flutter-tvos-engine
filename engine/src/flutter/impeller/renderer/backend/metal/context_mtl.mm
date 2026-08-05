@@ -25,30 +25,48 @@ static bool DeviceSupportsFramebufferFetch(id<MTLDevice> device) {
   // The iOS simulator lies about supporting framebuffer fetch.
 #if FML_OS_IOS_SIMULATOR
   return false;
-#else  // FML_OS_IOS_SIMULATOR
+#endif  // FML_OS_IOS_SIMULATOR
 
-  if (@available(macOS 10.15, iOS 13, tvOS 13, *)) {
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
+  // supportsFamily: is available on macOS 10.15+, iOS 13.0+
+#if FML_OS_IOS
+  // Since we target iOS 13.0+, this is always available on iOS
+  return [device supportsFamily:MTLGPUFamilyApple2];
+#elif FML_OS_MACOSX
+  // For macOS, check availability since we support 10.14.0+
+  if (@available(macOS 10.15, *)) {
     return [device supportsFamily:MTLGPUFamilyApple2];
+  } else {
+    // Fall back to feature set check for older macOS versions
+    return [device supportsFeatureSet:MTLFeatureSet_macOS_GPUFamily1_v1];
   }
+#endif
+#endif
   // According to
   // https://developer.apple.com/metal/Metal-Feature-Set-Tables.pdf , Apple2
   // corresponds to iOS GPU family 2, which supports A8 devices.
 #if FML_OS_IOS
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   return [device supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily2_v1];
+#else
+  // tvOS support - assume support (all tvOS devices support Apple2 family)
+  return true;
+#endif
 #else
   return false;
 #endif  // FML_OS_IOS
-#endif  // FML_OS_IOS_SIMULATOR
 }
 
 static bool DeviceSupportsComputeSubgroups(id<MTLDevice> device) {
   bool supports_subgroups = false;
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   // Refer to the "SIMD-scoped reduction operations" feature in the table
   // below: https://developer.apple.com/metal/Metal-Feature-Set-Tables.pdf
   if (@available(ios 13.0, tvos 13.0, macos 10.15, *)) {
     supports_subgroups = [device supportsFamily:MTLGPUFamilyApple7] ||
                          [device supportsFamily:MTLGPUFamilyMac2];
   }
+#endif
   return supports_subgroups;
 }
 

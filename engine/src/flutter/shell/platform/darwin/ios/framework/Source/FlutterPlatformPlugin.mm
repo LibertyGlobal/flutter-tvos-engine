@@ -20,10 +20,16 @@ FLUTTER_ASSERT_ARC
 
 namespace {
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 constexpr char kTextPlainFormat[] = "text/plain";
+#endif
 const UInt32 kKeyPressClickSoundId = 1306;
 
-NSString* const kSearchURLPrefix = @"x-web-search://?";
+#if not APPLICATION_EXTENSION_API_ONLY
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
+const NSString* searchURLPrefix = @"x-web-search://?";
+#endif
+#endif
 
 }  // namespace
 
@@ -43,6 +49,7 @@ const char* const kOverlayStyleUpdateNotificationKey =
 
 using namespace flutter;
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 static void SetStatusBarHiddenForSharedApplication(BOOL hidden) {
   UIApplication* flutterApplication = FlutterSharedApplication.application;
   if (flutterApplication) {
@@ -62,6 +69,7 @@ static void SetStatusBarStyleForSharedApplication(UIStatusBarStyle style) {
     FML_LOG(WARNING) << "Application based status bar styling is not available in app extension.";
   }
 }
+#endif
 
 @interface FlutterPlatformPlugin ()
 
@@ -144,8 +152,13 @@ static void SetStatusBarStyleForSharedApplication(UIStatusBarStyle style) {
     result([self clipboardHasStrings]);
   } else if ([method isEqualToString:@"LiveText.isLiveTextInputAvailable"]) {
     result(@([self isLiveTextInputAvailable]));
-  } else if ([method isEqualToString:@"SearchWeb.invoke"]) {
+  }
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
+  else if ([method isEqualToString:@"SearchWeb.invoke"]) {
     [self searchWeb:args];
+    result(nil);
+  } else if ([method isEqualToString:@"Share.invoke"]) {
+    [self showShareViewController:args];
     result(nil);
   } else if ([method isEqualToString:@"LookUp.invoke"]) {
     [self showLookUpViewController:args];
@@ -159,7 +172,9 @@ static void SetStatusBarStyleForSharedApplication(UIStatusBarStyle style) {
   } else if ([method isEqualToString:@"ContextMenu.hideSystemContextMenu"]) {
     [self hideSystemContextMenu];
     result(nil);
-  } else {
+  }
+#endif
+  else {
     result(FlutterMethodNotImplemented);
   }
 }
@@ -183,6 +198,7 @@ static void SetStatusBarStyleForSharedApplication(UIStatusBarStyle style) {
   }
 }
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 - (void)showShareViewController:(NSString*)content {
   UIViewController* engineViewController = [self.engine viewController];
 
@@ -230,10 +246,19 @@ static void SetStatusBarStyleForSharedApplication(UIStatusBarStyle style) {
   NSString* escapedText = [searchTerm
       stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet
                                                              URLHostAllowedCharacterSet]];
-  NSString* searchURL = [NSString stringWithFormat:@"%@%@", kSearchURLPrefix, escapedText];
+  NSString* searchURL = [NSString stringWithFormat:@"%@%@", searchURLPrefix, escapedText];
 
   [flutterApplication openURL:[NSURL URLWithString:searchURL] options:@{} completionHandler:nil];
 }
+#else
+- (void)showShareViewController:(NSString*)content {
+  // Not supported on tvOS
+}
+
+- (void)searchWeb:(NSString*)searchTerm {
+  // Not supported on tvOS
+}
+#endif
 
 - (void)playSystemSound:(NSString*)soundType {
   if ([soundType isEqualToString:@"SystemSoundType.click"]) {
@@ -249,6 +274,7 @@ static void SetStatusBarStyleForSharedApplication(UIStatusBarStyle style) {
     return;
   }
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   if ([@"HapticFeedbackType.lightImpact" isEqualToString:feedbackType]) {
     [[[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleLight] impactOccurred];
   } else if ([@"HapticFeedbackType.mediumImpact" isEqualToString:feedbackType]) {
@@ -258,11 +284,13 @@ static void SetStatusBarStyleForSharedApplication(UIStatusBarStyle style) {
   } else if ([@"HapticFeedbackType.selectionClick" isEqualToString:feedbackType]) {
     [[[UISelectionFeedbackGenerator alloc] init] selectionChanged];
   }
+#endif
 }
 
 - (void)setSystemChromePreferredOrientations:(NSArray*)orientations {
   UIInterfaceOrientationMask mask = 0;
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   if (orientations.count == 0) {
     mask |= UIInterfaceOrientationMaskAll;
   } else {
@@ -278,6 +306,7 @@ static void SetStatusBarStyleForSharedApplication(UIStatusBarStyle style) {
       }
     }
   }
+#endif
 
   if (!mask) {
     return;
@@ -293,6 +322,13 @@ static void SetStatusBarStyleForSharedApplication(UIStatusBarStyle style) {
 }
 
 - (void)setSystemChromeEnabledSystemUIOverlays:(NSArray*)overlays {
+  // Checks if the top status bar should be visible. This platform ignores all
+  // other overlays
+
+  // We opt out of view controller based status bar visibility since we want
+  // to be able to modify this on the fly. The key used is
+  // UIViewControllerBasedStatusBarAppearance
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   BOOL statusBarShouldBeHidden = ![overlays containsObject:@"SystemUiOverlay.top"];
   if ([overlays containsObject:@"SystemUiOverlay.bottom"]) {
     [[NSNotificationCenter defaultCenter]
@@ -314,9 +350,11 @@ static void SetStatusBarStyleForSharedApplication(UIStatusBarStyle style) {
     // UIViewControllerBasedStatusBarAppearance.
     SetStatusBarHiddenForSharedApplication(statusBarShouldBeHidden);
   }
+#endif
 }
 
 - (void)setSystemChromeEnabledSystemUIMode:(NSString*)mode {
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   BOOL edgeToEdge = [mode isEqualToString:@"SystemUiMode.edgeToEdge"];
   if (self.enableViewControllerBasedStatusBarAppearance) {
     [self.engine viewController].prefersStatusBarHidden = !edgeToEdge;
@@ -333,6 +371,7 @@ static void SetStatusBarStyleForSharedApplication(UIStatusBarStyle style) {
       postNotificationName:edgeToEdge ? FlutterViewControllerShowHomeIndicator
                                       : FlutterViewControllerHideHomeIndicator
                     object:nil];
+#endif
 }
 
 - (void)restoreSystemChromeSystemUIOverlays {
@@ -345,6 +384,7 @@ static void SetStatusBarStyleForSharedApplication(UIStatusBarStyle style) {
     return;
   }
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   UIStatusBarStyle statusBarStyle;
   if ([brightness isEqualToString:@"Brightness.dark"]) {
     statusBarStyle = UIStatusBarStyleLightContent;
@@ -365,8 +405,11 @@ static void SetStatusBarStyleForSharedApplication(UIStatusBarStyle style) {
                       object:nil
                     userInfo:@{@(kOverlayStyleUpdateNotificationKey) : @(statusBarStyle)}];
   } else {
+    // Note: -[UIApplication setStatusBarStyle] is deprecated in iOS9
+    // in favor of delegating to the view controller.
     SetStatusBarStyleForSharedApplication(statusBarStyle);
   }
+#endif
 }
 
 - (void)popSystemNavigator:(BOOL)isAnimated {
@@ -402,16 +445,19 @@ static void SetStatusBarStyleForSharedApplication(UIStatusBarStyle style) {
 }
 
 - (NSDictionary*)getClipboardData:(NSString*)format {
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   UIPasteboard* pasteboard = [UIPasteboard generalPasteboard];
   if (!format || [format isEqualToString:@(kTextPlainFormat)]) {
     NSString* stringInPasteboard = pasteboard.string;
     // The pasteboard may contain an item but it may not be a string (an image for instance).
     return stringInPasteboard == nil ? nil : @{@"text" : stringInPasteboard};
   }
+#endif
   return nil;
 }
 
 - (void)setClipboardData:(NSDictionary*)data {
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
   UIPasteboard* pasteboard = [UIPasteboard generalPasteboard];
   id copyText = data[@"text"];
   if ([copyText isKindOfClass:[NSString class]]) {
@@ -419,16 +465,22 @@ static void SetStatusBarStyleForSharedApplication(UIStatusBarStyle style) {
   } else {
     pasteboard.string = @"null";
   }
+#endif
 }
 
 - (NSDictionary*)clipboardHasStrings {
-  return @{@"value" : @([UIPasteboard generalPasteboard].hasStrings)};
+  bool hasStrings = false;
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
+  hasStrings = [UIPasteboard generalPasteboard].hasStrings;
+#endif
+  return @{@"value" : @(hasStrings)};
 }
 
 - (BOOL)isLiveTextInputAvailable {
   return [[self textField] canPerformAction:@selector(captureTextFromCamera:) withSender:nil];
 }
 
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 - (void)showLookUpViewController:(NSString*)term {
   UIViewController* engineViewController = [self.engine viewController];
   UIReferenceLibraryViewController* referenceLibraryViewController =
@@ -437,6 +489,11 @@ static void SetStatusBarStyleForSharedApplication(UIStatusBarStyle style) {
                                      animated:YES
                                    completion:nil];
 }
+#else
+- (void)showLookUpViewController:(NSString*)term {
+  // Not supported on tvOS
+}
+#endif
 
 - (UITextField*)textField {
   if (_textField == nil) {

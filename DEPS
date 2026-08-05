@@ -8,6 +8,8 @@
 # to list the dependency's destination directory.
 
 vars = {
+  'upc_git': 'https://github.com/LibertyGlobal,
+  'upc_revision': '3.32.8',
   'chromium_git': 'https://chromium.googlesource.com',
   'swiftshader_git': 'https://swiftshader.googlesource.com',
   'dart_git': 'https://dart.googlesource.com',
@@ -289,7 +291,8 @@ deps = {
   'https://boringssl.googlesource.com/boringssl.git' + '@' + Var('dart_boringssl_rev'),
 
   'engine/src/flutter/third_party/perfetto':
-   Var('flutter_git') + "/third_party/perfetto" + '@' + Var('dart_perfetto_rev'),
+    #  Var('flutter_git') + "/third_party/perfetto" + '@' + Var('dart_perfetto_rev'),
+   Var('upc_git') + '/flutter-tvos-perfetto.git' + '@' + Var('upc_revision'),
 
   'engine/src/flutter/third_party/protobuf':
    Var('flutter_git') + '/third_party/protobuf' + '@' + Var('dart_libprotobuf_rev'),
@@ -300,7 +303,8 @@ deps = {
   #  Var('flutter_git') + '/third_party/protobuf-gn' + '@' + Var('dart_protobuf_gn_rev'),
 
   'engine/src/flutter/third_party/dart':
-   Var('dart_git') + '/sdk.git' + '@' + Var('dart_revision'),
+   #  Var('dart_git') + '/sdk.git' + '@' + Var('dart_revision'),
+   Var('upc_git') + '/flutter-tvos-dart.git' + '@' + Var('upc_revision'),
 
   # WARNING: Unused Dart dependencies in the list below till "WARNING:" marker are removed automatically - see create_updated_flutter_deps.py.
 
@@ -486,7 +490,8 @@ deps = {
    Var('flutter_git') + '/third_party/freetype2' + '@' + 'bfc3453fdc85d87b45c896f68bf2e49ebdaeef0a',
 
   'engine/src/flutter/third_party/skia':
-   Var('skia_git') + '/skia.git' + '@' +  Var('skia_revision'),
+    #  Var('skia_git') + '/skia.git' + '@' +  Var('skia_revision'),
+   Var('upc_git') + '/flutter-tvos-skia.git' + '@' + Var('upc_revision'),
 
   'engine/src/flutter/third_party/ocmock':
    Var('flutter_git') + '/third_party/ocmock' + '@' +  Var('ocmock_rev'),
